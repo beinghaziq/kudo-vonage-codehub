@@ -12,13 +12,13 @@ import {
   toggleVideo,
   togglePublisherDestroy,
   stopStreaming,
-  createPublisher,
 } from "../VonageIntegration/publishData.js";
 import { WebsocketConnection } from "../ExternalApiIntegration/websocketConnection.jsx";
 import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import CreateTranslationResource from "../ExternalApiIntegration/createTranslationResource.js";
 import { useVonageSession } from '../Hooks/useVonageSession.js';
+import { useVonagePublisher } from "../Hooks/useVonagePublisher";
 import "./VideoChatComponent.scss";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -37,9 +37,8 @@ export const VideoComponent = () => {
     value: "ENG",
     label: "ENGLISH",
   });
-  const [streams, setStreams] = useState([]);
   const session = useVonageSession(opentokApiToken?.session_id, opentokApiToken?.publisher_token, setIsSessionConnected, SelectedLanguage);
-
+  const { createPublisher } = useVonagePublisher(session);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
@@ -97,8 +96,8 @@ export const VideoComponent = () => {
     setIsAudioEnabled(action);
     toggleAudio(action);
   };
-  const handleStartPublishing = () => {
-    createPublisher(session);
+  const HandleStartPublishing = () => {
+    createPublisher();
     setIsStreamSubscribed(true);
     publish(translatedBuffer);
   };
@@ -170,7 +169,7 @@ export const VideoComponent = () => {
       <div className="actions-btns">
         {isInterviewStarted && isSessionConnected ? (
           <Button
-            onClick={handleStartPublishing}
+            onClick={HandleStartPublishing}
             color="primary"
             variant="contained"
             disabled={isStreamSubscribed}

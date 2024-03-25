@@ -19,13 +19,11 @@ export const useVonageSession = (
   const [streams, setStreams] = useState();
 
   useEffect(() => {
-    console.log(" session after creation", session)
     if (session) {
       // session.disconnect();
       // Connect to the session
       session.connect(token, function (error) {
         // If the connection is successful, publish to the session
-        console.log("isconnected", subscriberId, token)
 
         setIsSessionConnected(true);
         if (error) {
@@ -74,9 +72,6 @@ export const useVonageSession = (
   //     }
   //   }
   // }, [selectedTargetLanguage]);
-
-  console.log("helkkk", session);
-
 
   return session;
 };

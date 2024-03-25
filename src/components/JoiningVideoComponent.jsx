@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import logo from "../assets/Group.png";
-import {
-  initializeSession,
-  reSubscribeStreams,
-} from "../ExternalApiIntegration/VideoApiIntegration.js";
 import { LanguageSelector } from "../LanguageSelector/LanguageSelector.js";
 import { useLocation } from "react-router-dom";
 import createSubscriberToken from './ExternalApiIntegration/createSubscriberToken.js';
 import { Button } from "@mui/material";
+import { useVonageSession } from '../Hooks/useVonageSession.js'
 import "./VideoChatComponent.scss";
 
 export const JoiningVideoComponent = () => {
@@ -21,48 +18,14 @@ export const JoiningVideoComponent = () => {
     value: "ENG",
     label: "ENGLISH",
   });
-  const [streams, setStreams] = useState([]);
   const [chunk, setChunk] = useState(null);
-  const [opentokApiToken, setOpentokApiToken] = useState({
-    session_id: sessionId,
-    subscriber_token: subscriberToken,
-  });
-  const languageRef = useRef(false);
-  const recorderRef = useRef(null);
-  const isHost = false;
-  useEffect(() => {
-    if (isWebinarStarted) {
-      initializeSession(
-        opentokApiToken,
-        setChunk,
-        recorderRef,
-        isHost,
-        SelectedLanguage.value,
-        streams,
-        setStreams,
-        setIsSessionConnected
-      );
-    }
-  }, [isWebinarStarted]);
 
-  useEffect(() => {
-    createSubscriberToken(sessionId)
-        .then((token) => {
-          setSubscriberToken(token.subscriber_token);
-          setOpentokApiToken({...opentokApiToken, subscriber_token: token.subscriber_token})
-        })
-        .catch((error) =>
-          console.error("Error creating subscriber id:", error)
-        );
-  }, []);
 
-  useEffect(() => {
-    if (languageRef.current) {
-      reSubscribeStreams(streams, SelectedLanguage.value);
-    } else {
-      languageRef.current = true;
-    }
-  }, [SelectedLanguage]);
+  
+  const HandleStartPublishing = () => {
+    useVonageSession(sessionId, subToken, setChunk, SelectedLanguage.value);
+    setIsWebinarStarted(true);
+  };
 
   return (
     <>
@@ -84,14 +47,14 @@ export const JoiningVideoComponent = () => {
         ) : null }
         { !isWebinarStarted && subscriberToken ? (
           <Button
-          onClick={() => setIsWebinarStarted(true)}
-          disabled={isWebinarStarted}
-          color="primary"
-          variant="contained"
-        >
-          Join Webinar
-        </Button>
-        ) : null}
+            onClick={HandleStartPublishing}
+            disabled={isWebinarStarted}
+            color="primary"
+            variant="contained"
+          >
+            Join Webinar
+          </Button>
+        ): null}
       </div>
       <div className="video-container">
         <>

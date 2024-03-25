@@ -2,56 +2,17 @@ import OT from "@opentok/client";
 import { handleError } from '../Helpers/HandleError.js';
 import { predefinedLanguages } from "../constants/PredefinedLanguages.js";
 
-let panner, publisher=[];
+let panner;
 const targetLanguages = predefinedLanguages.map(
   (language) => language.value
 );
-
-export function publish(
-  session,
-  translatedBuffer,
-  websocketTargetLanguage,
-  userTargetLanguage,
-  CaptionText
-) {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  // Create audio stream from mp3 file and video stream from webcam
-  Promise.all([
-    translatedBuffer ? getAudioBuffer(translatedBuffer, audioContext) : null,
-    OT.getUserMedia({ videoSource: null }),
-  ])
-    .then((results) => {
-      const [audioBuffer] = results;
-      const { audioStream } = createAudioStream(audioBuffer, audioContext);
-
-          console.log("Publishing the audio....");
-          // If publisher1 is already initialized, update the audio source
-          if (websocketTargetLanguage === targetLanguages[websocketTargetLanguage]) {
-            sendCaption(
-              session,
-              CaptionText,
-              userTargetLanguage,
-              websocketTargetLanguage
-            );
-            publisher[i].publishAudio(false); // Stop publishing audio temporarily
-            publisher[i].setAudioSource(audioStream.getAudioTracks()[0]); // Set new audio source
-            publisher[i].publishAudio(true); // Start publishing audio again
-            publisher[i].publishCaptions(true);
-          }
-    })
-    .catch((error) => {
-      audioContext.close();
-      throw error;
-    });
-}
-
-function getAudioBuffer(buffer, audioContext) {
+export function getAudioBuffer(buffer, audioContext) {
   return new Promise((resolve, reject) => {
     audioContext.decodeAudioData(buffer, resolve, reject);
   });
 }
 
-function createAudioStream(audioBuffer, audioContext) {
+export function createAudioStream(audioBuffer, audioContext) {
   const startTime = audioContext.currentTime;
 
   const player = audioContext.createBufferSource();
@@ -72,7 +33,7 @@ function createAudioStream(audioBuffer, audioContext) {
   };
 }
 
-function sendCaption(session, captionText, userTargetLanguage, websocketTargetLanguage) {
+export function sendCaption(session, captionText, userTargetLanguage, websocketTargetLanguage) {
     session.signal({
         type: 'caption',
         data: {captionText,userTargetLanguage, websocketTargetLanguage},
@@ -87,20 +48,20 @@ function sendCaption(session, captionText, userTargetLanguage, websocketTargetLa
 
 // The following functions are used in functionality customization
 export function toggleVideo(state) {
-  publisher.forEach(pub => {
-    pub.publishVideo(state);
-  });
+  // publisher.forEach(pub => {
+  //   pub.publishVideo(state);
+  // });
 }
 export function toggleAudio(state) {
-  publisher.forEach(pub => {
-    pub.publishAudio(state);
-  });
+  // publisher.forEach(pub => {
+  //   pub.publishAudio(state);
+  // });
 }
 
 export function togglePublisherDestroy() {
-  publisher.forEach(pub => {
-    pub.disconnect();
-  });
+  // publisher.forEach(pub => {
+  //   pub.disconnect();
+  // });
 }
 
 export function stopStreaming() {
@@ -111,7 +72,7 @@ export function stopStreaming() {
   // }
 }
 
-export function createPublisher(session) {
+export function createPublisher(session, publisher, setPublisher) {
   for (let i = 0; i < targetLanguages.length; i++) {
     const publisherOptions = {
       insertMode: "append",
@@ -126,9 +87,7 @@ export function createPublisher(session) {
       name: targetLanguages[i],
     };
 
-    console.log("helllo", publisher)
-
-    publisher[i] = OT.initPublisher(
+    let pub = OT.initPublisher(
       "publisher",
       publisherOptions,
       // eslint-disable-next-line no-loop-func
@@ -145,5 +104,11 @@ export function createPublisher(session) {
         }
       }
     );
+    console.log("publisher", publisher)
+    setPublisher(prevPub => ({
+      ...prevPub,
+      [targetLanguages[i]]: pub
+    }));
+    console.log("helllo", publisher)
   }  
 }
