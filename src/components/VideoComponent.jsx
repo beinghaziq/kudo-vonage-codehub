@@ -4,28 +4,28 @@ import MicOffIcon from "@mui/icons-material/MicOff.js";
 import VideocamIcon from "@mui/icons-material/Videocam.js";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff.js";
 import { Tooltip, Button } from "@mui/material";
-import logo from "./Group.png";
+import OT from "@opentok/client";
+import RecordRTC, { StereoAudioRecorder } from "recordrtc";
+import logo from "../assets/Group.png";
 import {
   toggleAudio,
   toggleVideo,
   togglePublisherDestroy,
-  initializeSession,
   stopStreaming,
-  publish,
-  reSubscribeStreams,
-} from "./ExternalApiIntegration/VideoApiIntegration.js";
-import { WebsocketConnection } from "./ExternalApiIntegration/websocketConnection";
+  createPublisher,
+} from "../VonageIntegration/publishData.js";
+import { WebsocketConnection } from "../ExternalApiIntegration/websocketConnection.jsx";
 import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import createVonageApiTokens from "./ExternalApiIntegration/createVonageApiTokens.js";
-import CreateTranslationResource from "./ExternalApiIntegration/createTranslationResource.js";
-import FetchApiToken  from "./ExternalApiIntegration/fetchApiToken.js";
+import CreateTranslationResource from "../ExternalApiIntegration/createTranslationResource.js";
+import { useVonageSession } from '../Hooks/useVonageSession.js';
 import "./VideoChatComponent.scss";
 import "react-toastify/dist/ReactToastify.css";
 
 export const VideoComponent = () => {
   const location = useLocation();
   const state = location.state.form;
+  const opentokApiToken = location.state.apiToken;
   const predefinedTargetLanguge = state.target.map((x) => x.value);
   const [isInterviewStarted, setIsInterviewStarted] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -38,28 +38,18 @@ export const VideoComponent = () => {
     label: "ENGLISH",
   });
   const [streams, setStreams] = useState([]);
+  const session = useVonageSession(opentokApiToken?.session_id, opentokApiToken?.publisher_token, setIsSessionConnected, SelectedLanguage);
+
   const [chunk, setChunk] = useState(null);
-  const [opentokApiToken, setOpentokApiToken] = useState(null);
   const [resourceId, setResourceId] = useState(null);
-  const languageRef = useRef(false);
   const recorderRef = useRef(null);
   const JoiningLink = opentokApiToken
     ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}`
     : null;
 
-  const isHost = true;
   useEffect(() => {
     if (isInterviewStarted) {
-      initializeSession(
-        opentokApiToken,
-        setChunk,
-        recorderRef,
-        isHost,
-        SelectedLanguage.value,
-        streams,
-        setStreams,
-        setIsSessionConnected
-      );
+      // call hook for session
     } else {
       stopStreaming();
 
@@ -70,28 +60,33 @@ export const VideoComponent = () => {
   }, [isInterviewStarted]);
 
   useEffect(() => {
-    if (languageRef.current) {
-      reSubscribeStreams(streams, SelectedLanguage.value);
-    } else {
-      languageRef.current = true;
-    }
-  }, [SelectedLanguage]);
-
-  useEffect(() => {
-    if (isHost) {
       CreateTranslationResource(predefinedTargetLanguge, state.source, state.gender)
         .then((id) => setResourceId(id))
         .catch((error) =>
           console.error("Error creating translation resource:", error)
         );
-
-      createVonageApiTokens()
-        .then((tokens) => setOpentokApiToken(tokens))
-        .catch((error) =>
-          console.error("Error creating translation resource:", error)
-        );
-    }
   }, []);
+
+  useEffect(() => { 
+    if (isStreamSubscribed) {
+      OT.getUserMedia({ audio: true })
+        .then(function (stream) {
+          recorderRef.current = new RecordRTC(stream, {
+            type: "audio",
+            mimeType: "audio/wav",
+            recorderType: StereoAudioRecorder,
+            timeSlice: 500,
+            ondataavailable: function (data) {
+              setChunk(data);
+            },
+          });
+          recorderRef.current.startRecording();
+        })
+        .catch(function (error) {
+          console.error("Error accessing microphone:", error);
+        });
+    }
+  }, [isStreamSubscribed])
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(JoiningLink);
@@ -103,6 +98,7 @@ export const VideoComponent = () => {
     toggleAudio(action);
   };
   const handleStartPublishing = () => {
+    createPublisher(session);
     setIsStreamSubscribed(true);
     publish(translatedBuffer);
   };
@@ -122,7 +118,7 @@ export const VideoComponent = () => {
       <>
         {isInterviewStarted && (
           <div className="video-toolbar">
-            {isHost && isSessionConnected ? (
+            {isSessionConnected ? (
               <div className="video-tools">
                 {isAudioEnabled ? (
                   <Tooltip title="mic on">
@@ -172,7 +168,7 @@ export const VideoComponent = () => {
       </div>
       <h4 className="AppHeading">Multilingual Webinar powered by KUDO AI</h4>
       <div className="actions-btns">
-        {isHost && isInterviewStarted && isSessionConnected ? (
+        {isInterviewStarted && isSessionConnected ? (
           <Button
             onClick={handleStartPublishing}
             color="primary"

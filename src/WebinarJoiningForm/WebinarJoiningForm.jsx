@@ -12,6 +12,7 @@ import {
   PRIVACY_POLICY_LINK,
 } from "../constants/ExternalLinks.js";
 import logo from "../assets/kudo.png";
+import { createVonageApiTokens } from "../ExternalApiIntegration/createVonageApiTokens.js";
 
 export const WebinarJoiningForm = () => {
   const navigate = useNavigate();
@@ -32,11 +33,18 @@ export const WebinarJoiningForm = () => {
 
   const submitButton = (e) => {
     e.preventDefault();
-    navigate("/webinar", {
-      state: {
-        form: { ...form, gender: selectedGender },
-      },
-    });
+    createVonageApiTokens()
+      .then((tokens) => {
+        navigate("/webinar", {
+          state: {
+            form: { ...form, gender: selectedGender },
+            apiToken: tokens,
+          },
+        });
+      })
+      .catch((error) =>
+        console.error("Error creating translation resource:", error)
+      );
   };
 
   const handleChange = (e) => {

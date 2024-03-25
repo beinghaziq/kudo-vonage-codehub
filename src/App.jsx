@@ -1,5 +1,5 @@
-import { VideoComponent } from "./VideoComponent.jsx";
-import { JoiningVideoComponent } from "./JoiningVideoComponent.jsx";
+import { VideoComponent } from "./components/VideoComponent.jsx";
+import { JoiningVideoComponent } from "./components/JoiningVideoComponent.jsx";
 import { WebinarJoiningForm } from "./WebinarJoiningForm/WebinarJoiningForm.jsx";
 import { Health } from "./common/Health.jsx";
 

@@ -1,6 +1,6 @@
 import { baseService } from "./baseService.js";
 
-const createVonageApiTokens = async () => {
+export const createVonageApiTokens = async () => {
   try {
     const response = await baseService.post(
       "https://marketplaceapi-staging.meetkudo.com/api/v1/external_api/sessions",
@@ -22,5 +22,3 @@ const createVonageApiTokens = async () => {
     return null;
   }
 };
-
-export default createVonageApiTokens;

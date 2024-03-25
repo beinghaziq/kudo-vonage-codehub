@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import logo from "./Group.png";
+import logo from "../assets/Group.png";
 import {
   initializeSession,
   reSubscribeStreams,
-} from "./ExternalApiIntegration/VideoApiIntegration.js";
-import { LanguageSelector } from "./LanguageSelector/LanguageSelector.js";
+} from "../ExternalApiIntegration/VideoApiIntegration.js";
+import { LanguageSelector } from "../LanguageSelector/LanguageSelector.js";
 import { useLocation } from "react-router-dom";
 import createSubscriberToken from './ExternalApiIntegration/createSubscriberToken.js';
 import { Button } from "@mui/material";

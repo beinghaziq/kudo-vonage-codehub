@@ -3,7 +3,7 @@ import useWebSocket from "react-use-websocket";
 import { useCallback, useEffect, useState } from "react";
 import { AUTH_TOKEN } from "../config.js";
 
-import { publish } from "./VideoApiIntegration.js";
+import { publish } from "../VonageIntegration/publishData.js";
 
 export const WebsocketConnection = ({
   dataBlobUrl,
