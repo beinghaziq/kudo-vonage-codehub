@@ -96,7 +96,6 @@ export const WebsocketConnection = ({
 
   useEffect(() => {
     if(!isPlaying && playingQueue.length > 0) {
-      console.log("here from queue");
       publishToSubs(playingQueue[0]);
       setPlayingQueue(playingQueue.slice(1));
     }

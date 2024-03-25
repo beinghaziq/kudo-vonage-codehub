@@ -215,7 +215,6 @@ function createAudioStream(audioBuffer, audioContext) {
 }
 
 export function publish(translatedBuffer, websocketTargetLanguage, userTargetLanguage, CaptionText, setIsPlaying) {
-  console.log(setIsPlaying);
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   // Create audio stream from mp3 file and video stream from webcam
   Promise.all([
