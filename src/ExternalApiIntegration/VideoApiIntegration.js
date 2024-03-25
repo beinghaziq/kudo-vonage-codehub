@@ -214,7 +214,8 @@ function createAudioStream(audioBuffer, audioContext) {
   };
 }
 
-export function publish(translatedBuffer, websocketTargetLanguage, userTargetLanguage, CaptionText) {
+export function publish(translatedBuffer, websocketTargetLanguage, userTargetLanguage, CaptionText, setIsPlaying) {
+  console.log(setIsPlaying);
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   // Create audio stream from mp3 file and video stream from webcam
   Promise.all([
@@ -276,5 +277,7 @@ export function publish(translatedBuffer, websocketTargetLanguage, userTargetLan
     .catch((error) => {
       audioContext.close();
       throw error;
+    }).finally(()=> {
+      if (setIsPlaying) setIsPlaying(false);
     });
 }

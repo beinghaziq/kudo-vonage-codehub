@@ -1,6 +1,6 @@
 // Ensure you have installed the following React packages: react-use-websocket and file-saver
 import useWebSocket from "react-use-websocket";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AUTH_TOKEN } from "../config.js";
 
 import { publish } from "./VideoApiIntegration.js";
@@ -13,7 +13,8 @@ export const WebsocketConnection = ({
 }) => {
   const SERVER_URL = `wss://external-api-preprod.meetkudo.com/api/v1/translate?id=${resourceId}`;
   const API_TOKEN = AUTH_TOKEN;
-
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playingQueue, setPlayingQueue] = useState([]);
   // converting the data to valid binary format
   function convertDataURIToBinary(dataURI) {
     var BASE64_MARKER = ";base64,";
@@ -34,23 +35,10 @@ export const WebsocketConnection = ({
       console.log("WebSocket connection established.");
     },
     onMessage: (message) => {
-      let data = JSON.parse(message.data);
-      console.log("Translating your audio...");
-      console.log("Websocket response", data);
-
-      var data1 = "audio/wav;base64," + data.audioData;
-      var bufferData = convertDataURIToBinary(data1);
-      var audioBlob = new Blob([bufferData], { type: "audio/wav" });
-
-      var reader = new FileReader();
-      reader.onload = function (event) {
-        var audioData = event.target.result;
-
-        publish(audioData, data.targetLanguage, userTargetLanguage, data.text);
-      };
-      reader.readAsArrayBuffer(audioBlob);
-      if (!isInterviewStarted) {
-        getWebSocket().close();
+      if (isPlaying) {
+        setPlayingQueue([...playingQueue, message]);
+      } else {
+        publishToSubs(message);
       }
     },
     onClose: (e) => {
@@ -74,8 +62,43 @@ export const WebsocketConnection = ({
     sendMessage(JSON.stringify(pcmData));
   }, [dataBlobUrl, sendMessage]);
 
+  const publishToSubs = useCallback((message) => {
+    setIsPlaying(true);
+    let data = JSON.parse(message.data);
+    console.log("Translating your audio...");
+    console.log("Websocket response", data);
+
+    var data1 = "audio/wav;base64," + data.audioData;
+    var bufferData = convertDataURIToBinary(data1);
+    var audioBlob = new Blob([bufferData], { type: "audio/wav" });
+
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      var audioData = event.target.result;
+      publish(
+        audioData,
+        data.targetLanguage,
+        userTargetLanguage,
+        data.text,
+        setIsPlaying
+      );
+    };
+    reader.readAsArrayBuffer(audioBlob);
+    if (!isInterviewStarted) {
+      getWebSocket().close();
+    }
+  })
+
   // render convertBlobToArray function for every chunk of data
   useEffect(() => {
     convertBlobToArray();
   }, [dataBlobUrl, convertBlobToArray]);
+
+  useEffect(() => {
+    if(!isPlaying && playingQueue.length > 0) {
+      console.log("here from queue");
+      publishToSubs(playingQueue[0]);
+      setPlayingQueue(playingQueue.slice(1));
+    }
+  }, [isPlaying]);
 };
