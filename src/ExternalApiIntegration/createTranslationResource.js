@@ -3,7 +3,7 @@ import { AUTH_TOKEN } from "../config.js";
 
 const createTranslationResource = async (targetLanguage, sourceLanguage, gender) => {
   const requestData = {
-    clientId: "kudo-preprod-payments-auth-client",
+    clientId: "kudo-prod-payments-web-client",
     sourceLanguages: [`${sourceLanguage}`],
     targetLanguages: targetLanguage,
     voiceGender: gender,
@@ -11,7 +11,7 @@ const createTranslationResource = async (targetLanguage, sourceLanguage, gender)
 
   try {
     const response = await baseService.post(
-      "https://external-api-preprod.meetkudo.com/api/v1/translation_resource",
+      "https://external-api.kudoway.com/api/v1/translation_resource",
       JSON.stringify(requestData),
       {
         headers: {

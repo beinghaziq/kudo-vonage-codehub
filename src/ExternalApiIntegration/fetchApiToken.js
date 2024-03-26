@@ -4,10 +4,10 @@ const FetchApiToken = async () => {
 
   try {
     const response = await baseService.post(
-      "https://auth.preprod.meetkudo.com/api/sso/v1/oauth2/token",
+      "https://auth-api.kudoway.com/api/sso/v1/oauth2/token",
       {
-        client_id: 'kudo-preprod-payments-auth-client',
-        client_secret: 'CqHHVKZOJ843Bb8fxA5Ug0wrUx1sBlM1wO7JLkdz0cQ='
+        client_id: "kudo-prod-payments-web-client",
+        client_secret: "4F4qk/KpemGJb3NKTTR0BRdlmrjRBlBh0L7hLbbqJFM=",
       },
       {
         headers: {
