@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import OT from "@opentok/client";
 import { predefinedLanguages } from "../constants/PredefinedLanguages.js";
 import { handleError } from "../Helpers/HandleError.js";
@@ -9,23 +9,12 @@ import {
 } from "../VonageIntegration/publishData.js";
 
 export const useVonagePublisher = (session) => {
-  const [publisher, setPublisher] = useState({});
-  const shouldCreatePublisher = useRef(false);
-  const isEmpty = Object.keys(publisher).length === 0;
+  const [publishers, setPublishers] = useState({});
 
   const targetLanguages = predefinedLanguages.map((language) => language.value);
-  useEffect(() => {
-    if (session && shouldCreatePublisher && isEmpty) {
-      createPublisher(session, publisher, setPublisher);
-    } 
-    if(shouldCreatePublisher && !isEmpty) {
-      publishTranslatedAudio();
-    }else {
-        shouldCreatePublisher.current = true;
-    }
-  }, []);
 
   const createPublisher = () => {
+    const localPublishers ={};
     for (let i = 0; i < targetLanguages.length; i++) {
       const publisherOptions = {
         insertMode: "append",
@@ -40,7 +29,7 @@ export const useVonagePublisher = (session) => {
         name: targetLanguages[i],
       };
   
-      let pub = OT.initPublisher(
+      let publisher = OT.initPublisher(
         "publisher",
         publisherOptions,
         // eslint-disable-next-line no-loop-func
@@ -49,7 +38,7 @@ export const useVonagePublisher = (session) => {
             handleError(error);
           } else {
             // If the connection is successful, publish the publisher1 to the session
-            session.publish(pub, (error) => {
+            session.publish(publisher, (error) => {
               if (error) {
                 handleError(error);
               }
@@ -57,16 +46,12 @@ export const useVonagePublisher = (session) => {
           }
         }
       );
-      setPublisher(prev => ({
-        ...prev,
-        [targetLanguages[i]]: pub
-      }));
-      console.log("helllo", publisher, pub, targetLanguages[i])
-    }  
+      localPublishers[targetLanguages[i]] = publisher
+    }
+    setPublishers(localPublishers);
   }
 
   const publishTranslatedAudio = (
-    session,
     translatedBuffer,
     websocketTargetLanguage,
     userTargetLanguage,
@@ -91,12 +76,12 @@ export const useVonagePublisher = (session) => {
           userTargetLanguage,
           websocketTargetLanguage
         );
-        publisher[websocketTargetLanguage].publishAudio(false); // Stop publishing audio temporarily
-        publisher[websocketTargetLanguage].setAudioSource(
+        publishers[websocketTargetLanguage].publishAudio(false); // Stop publishing audio temporarily
+        publishers[websocketTargetLanguage].setAudioSource(
           audioStream.getAudioTracks()[0]
         ); // Set new audio source
-        publisher[websocketTargetLanguage].publishAudio(true); // Start publishing audio again
-        publisher[websocketTargetLanguage].publishCaptions(true);
+        publishers[websocketTargetLanguage].publishAudio(true); // Start publishing audio again
+        publishers[websocketTargetLanguage].publishCaptions(true);
       })
       .catch((error) => {
         audioContext.close();
@@ -105,7 +90,7 @@ export const useVonagePublisher = (session) => {
   };
 
   return {
-    publisher,
+    publishers,
     createPublisher,
     publishTranslatedAudio
   };

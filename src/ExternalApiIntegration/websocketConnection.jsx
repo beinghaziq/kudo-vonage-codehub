@@ -3,13 +3,12 @@ import useWebSocket from "react-use-websocket";
 import { useCallback, useEffect, useState } from "react";
 import { AUTH_TOKEN } from "../config.js";
 
-import { publish } from "../VonageIntegration/publishData.js";
-
 export const WebsocketConnection = ({
   dataBlobUrl,
   resourceId,
   isInterviewStarted,
   userTargetLanguage,
+  publishTranslatedAudio
 }) => {
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
   const API_TOKEN = AUTH_TOKEN;
@@ -35,10 +34,23 @@ export const WebsocketConnection = ({
       console.log("WebSocket connection established.");
     },
     onMessage: (message) => {
-      if (isPlaying) {
-        setPlayingQueue([...playingQueue, message]);
-      } else {
-        publishToSubs(message);
+      let data = JSON.parse(message.data);
+      console.log("Translating your audio...");
+      console.log("Websocket response", data);
+
+      var data1 = "audio/wav;base64," + data.audioData;
+      var bufferData = convertDataURIToBinary(data1);
+      var audioBlob = new Blob([bufferData], { type: "audio/wav" });
+
+      var reader = new FileReader();
+      reader.onload = function (event) {
+        var audioData = event.target.result;
+        publishTranslatedAudio(audioData, data.targetLanguage, userTargetLanguage, data.text);
+        // publish(audioData, data.targetLanguage, userTargetLanguage, data.text);
+      };
+      reader.readAsArrayBuffer(audioBlob);
+      if (!isInterviewStarted) {
+        getWebSocket().close();
       }
     },
     onClose: (e) => {

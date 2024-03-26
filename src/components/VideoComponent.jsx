@@ -37,8 +37,8 @@ export const VideoComponent = () => {
     value: "ENG",
     label: "ENGLISH",
   });
-  const session = useVonageSession(opentokApiToken?.session_id, opentokApiToken?.publisher_token, setIsSessionConnected, SelectedLanguage);
-  const { createPublisher } = useVonagePublisher(session);
+  const {session, toggleSession} = useVonageSession(opentokApiToken?.session_id, opentokApiToken?.publisher_token, setIsSessionConnected, SelectedLanguage);
+  const { createPublisher, publishTranslatedAudio } = useVonagePublisher(session);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
@@ -96,10 +96,15 @@ export const VideoComponent = () => {
     setIsAudioEnabled(action);
     toggleAudio(action);
   };
-  const HandleStartPublishing = () => {
+  const handleStartPublishing = () => {
     createPublisher();
     setIsStreamSubscribed(true);
     publish(translatedBuffer);
+  };
+
+  const handleStartWebinar = () => {
+    toggleSession();
+    setIsInterviewStarted(true);
   };
 
   const onToggleVideo = (action) => {
@@ -169,7 +174,7 @@ export const VideoComponent = () => {
       <div className="actions-btns">
         {isInterviewStarted && isSessionConnected ? (
           <Button
-            onClick={HandleStartPublishing}
+            onClick={handleStartPublishing}
             color="primary"
             variant="contained"
             disabled={isStreamSubscribed}
@@ -180,7 +185,7 @@ export const VideoComponent = () => {
         {opentokApiToken ? (
           <>
             <Button
-              onClick={() => setIsInterviewStarted(true)}
+              onClick={handleStartWebinar}
               disabled={isInterviewStarted}
               color="primary"
               variant="contained"
@@ -228,6 +233,7 @@ export const VideoComponent = () => {
           isInterviewStarted={isInterviewStarted}
           resourceId={resourceId}
           userTargetLanguage={SelectedLanguage.value}
+          publishTranslatedAudio={publishTranslatedAudio}
         />
       ) : null}
     </div>

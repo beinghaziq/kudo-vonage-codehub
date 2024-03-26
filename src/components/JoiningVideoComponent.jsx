@@ -19,11 +19,13 @@ export const JoiningVideoComponent = () => {
     label: "ENGLISH",
   });
   const [chunk, setChunk] = useState(null);
+  const { toggleSession } = useVonageSession(sessionId, subToken, setChunk, SelectedLanguage.value);
+
 
 
   
   const HandleStartPublishing = () => {
-    useVonageSession(sessionId, subToken, setChunk, SelectedLanguage.value);
+    toggleSession();
     setIsWebinarStarted(true);
   };
 

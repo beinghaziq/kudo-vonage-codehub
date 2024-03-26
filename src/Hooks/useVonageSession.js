@@ -16,15 +16,13 @@ export const useVonageSession = (
 ) => {
   const [session, setSession] = useState();
   const [subscriber, setSubscriber] = useState();
-  const [streams, setStreams] = useState();
+  const [streams, setStreams] = useState([]);
 
   useEffect(() => {
     if (session) {
-      // session.disconnect();
       // Connect to the session
       session.connect(token, function (error) {
         // If the connection is successful, publish to the session
-
         setIsSessionConnected(true);
         if (error) {
           handleError(error);
@@ -44,9 +42,18 @@ export const useVonageSession = (
         )
       );
     }else {
-      setSession(OT.initSession(API_KEY, subscriberId));
+      
     }
   }, [session]);
+
+  const toggleSession = () =>{
+    if(session && session.isConnected()){
+      session.disconnect();
+      setSession(null);
+    }else {
+      setSession(OT.initSession(API_KEY, subscriberId));
+    }
+  }
 
   // useEffect(() => {
   //   if (subscriber) {
@@ -73,5 +80,8 @@ export const useVonageSession = (
   //   }
   // }, [selectedTargetLanguage]);
 
-  return session;
+  return {
+    session,
+    toggleSession,
+  }
 };
