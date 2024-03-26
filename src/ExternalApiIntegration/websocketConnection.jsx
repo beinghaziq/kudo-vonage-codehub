@@ -3,12 +3,7 @@ import useWebSocket from 'react-use-websocket';
 import { useCallback, useEffect, useState } from 'react';
 import { AUTH_TOKEN } from '../config.js';
 
-export const WebsocketConnection = ({
-  dataBlobUrl,
-  resourceId,
-  isInterviewStarted,
-  publishTranslatedAudio,
-}) => {
+export const WebsocketConnection = ({ dataBlobUrl, resourceId, isInterviewStarted, publishTranslatedAudio }) => {
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
   const API_TOKEN = AUTH_TOKEN;
   const [isPlaying, setIsPlaying] = useState(false);

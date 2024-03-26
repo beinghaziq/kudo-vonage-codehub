@@ -68,18 +68,12 @@ export const useVonagePublisher = (session) => {
         const [audioBuffer] = results;
         const { audioStream } = createAudioStream(audioBuffer, audioContext);
 
-        console.log("Publishing the audio....");
+        console.log('Publishing the audio....');
         // If publisher1 is already initialized, update the audio source
         publishers[websocketTargetLanguage].publishAudio(false); // Stop publishing audio temporarily
-        publishers[websocketTargetLanguage].setAudioSource(
-          audioStream.getAudioTracks()[0]
-        ); // Set new audio source
+        publishers[websocketTargetLanguage].setAudioSource(audioStream.getAudioTracks()[0]); // Set new audio source
         publishers[websocketTargetLanguage].publishAudio(true); // Start publishing audio again
-        sendCaption(
-          session,
-          CaptionText,
-          websocketTargetLanguage
-        );
+        sendCaption(session, CaptionText, websocketTargetLanguage);
         publishers[websocketTargetLanguage].publishCaptions(true);
       })
       .catch((error) => {
