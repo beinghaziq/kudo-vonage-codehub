@@ -27,14 +27,17 @@ export function createAudioStream(audioBuffer, audioContext) {
 }
 
 export function sendCaption(session, captionText, userTargetLanguage, websocketTargetLanguage) {
-    session.signal({
-        type: 'caption',
-        data: {captionText,userTargetLanguage, websocketTargetLanguage},
-      }, function(error) {
-        if (error) {
-          console.error('Error sending signal:', error);
-        } else {
-          console.log('Caption signal sent');
-        }
-      });
+  session.signal(
+    {
+      type: 'caption',
+      data: { captionText, userTargetLanguage, websocketTargetLanguage },
+    },
+    function (error) {
+      if (error) {
+        console.error('Error sending signal:', error);
+      } else {
+        console.log('Caption signal sent');
+      }
+    }
+  );
 }

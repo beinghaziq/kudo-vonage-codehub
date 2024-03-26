@@ -1,28 +1,24 @@
-import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./WebinarJoiningForm.scss";
-import Select from "react-select";
-import { sourceLanguages } from "../constants/sourceLanguages.js";
-import { predefinedLanguages } from "../constants/PredefinedLanguages.js";
-import {
-  TERMS_CONDITIONS_LINK,
-  COOKIE_POLICY_LINK,
-  PRIVACY_POLICY_LINK,
-} from "../constants/ExternalLinks.js";
-import logo from "../assets/kudo.png";
-import { createVonageApiTokens } from "../ExternalApiIntegration/createVonageApiTokens.js";
+import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './WebinarJoiningForm.scss';
+import Select from 'react-select';
+import { sourceLanguages } from '../constants/sourceLanguages.js';
+import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
+import { TERMS_CONDITIONS_LINK, COOKIE_POLICY_LINK, PRIVACY_POLICY_LINK } from '../constants/ExternalLinks.js';
+import logo from '../assets/kudo.png';
+import { createVonageApiTokens } from '../ExternalApiIntegration/createVonageApiTokens.js';
 
 export const WebinarJoiningForm = () => {
   const navigate = useNavigate();
-  const [selectedGender, setSelectedGender] = useState("female");
+  const [selectedGender, setSelectedGender] = useState('female');
 
   const [form, setForm] = useState({
-    name: "",
+    name: '',
     target: predefinedLanguages,
-    source: "",
-    role: "",
+    source: '',
+    role: '',
     gender: selectedGender,
   });
 
@@ -35,16 +31,14 @@ export const WebinarJoiningForm = () => {
     e.preventDefault();
     createVonageApiTokens()
       .then((tokens) => {
-        navigate("/webinar", {
+        navigate('/webinar', {
           state: {
             form: { ...form, gender: selectedGender },
             apiToken: tokens,
           },
         });
       })
-      .catch((error) =>
-        console.error("Error creating translation resource:", error)
-      );
+      .catch((error) => console.error('Error creating translation resource:', error));
   };
 
   const handleChange = (e) => {
@@ -69,9 +63,7 @@ export const WebinarJoiningForm = () => {
         </div>
         <div className="w-1/2 h-full flex flex-col items-center justify-center rounded-tr-3xl rounded-br-3xl p-4 bg-[#F5F5F5]">
           <div className="flex flex-col items-center my-auto justify-center gap-16">
-            <h1 className="text-TextBlue text-center font-roboto font-bold text-3xl">
-              Welcome!
-            </h1>
+            <h1 className="text-TextBlue text-center font-roboto font-bold text-3xl">Welcome!</h1>
             <div className="flex flex-col gap-4">
               <input
                 className="w-80 rounded-lg border-1 border-[#747474] bg-[#F5F5F5] p-[0.35rem] pl-2"
@@ -87,14 +79,12 @@ export const WebinarJoiningForm = () => {
                 styles={{
                   control: (baseStyles) => ({
                     ...baseStyles,
-                    borderColor: "#747474",
-                    backgroundColor: "#F5F5F5",
-                    borderRadius: "0.5rem",
+                    borderColor: '#747474',
+                    backgroundColor: '#F5F5F5',
+                    borderRadius: '0.5rem',
                   }),
                 }}
-                onChange={(selectedOption) =>
-                  handleRoleChange(selectedOption, "source")
-                }
+                onChange={(selectedOption) => handleRoleChange(selectedOption, 'source')}
               />
               <div className="flex flex-col flex-col-2 justify-content items-center">
                 <p className="text-black mb-2">Select your Voice Preference</p>
@@ -102,24 +92,22 @@ export const WebinarJoiningForm = () => {
                   <input
                     className="GenderSelection"
                     type="radio"
-                    inline
                     id="female"
                     label="Female"
                     value="female"
-                    checked={selectedGender === "female"}
+                    checked={selectedGender === 'female'}
                     onChange={handleGenderChange}
                   />
-                  <label for="html">Female</label>
+                  <label htmlFor="html">Female</label>
                   <input
                     type="radio"
                     id="male"
-                    inline
                     label="Male"
                     value="male"
-                    checked={selectedGender === "male"}
+                    checked={selectedGender === 'male'}
                     onChange={handleGenderChange}
                   />
-                  <label for="html">Male</label>
+                  <label htmlFor="html">Male</label>
                 </div>
               </div>
               <button
@@ -134,11 +122,11 @@ export const WebinarJoiningForm = () => {
           </div>
           <div className="relative">
             <span className="text-black text-center font-roboto text-sm font-normal">
-              By clicking "Join" you agree to the KUDO
+              By clicking Join you agree to the KUDO
             </span>
             <span className="text-blue-600 font-roboto text-sm font-normal no-underline">
               <a href={TERMS_CONDITIONS_LINK} target="_blank" rel="noreferrer">
-                {"\u00A0"}Terms of Use,{"\u00A0"}
+                {'\u00A0'}Terms of Use,{'\u00A0'}
               </a>
               <a href={COOKIE_POLICY_LINK} target="_blank" rel="noreferrer">
                 Cookie Policy

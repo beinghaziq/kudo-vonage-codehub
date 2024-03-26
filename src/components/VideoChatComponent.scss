@@ -27,7 +27,7 @@
   width: auto;
 }
 
-.AppHeading{
+.AppHeading {
   margin-top: 1rem;
   display: flex;
   justify-content: center;
@@ -61,7 +61,7 @@
       }
     }
 
-    >:first-child {
+    > :first-child {
       visibility: visible;
     }
   
@@ -85,16 +85,15 @@
         margin-left: 410px;
       }
     }
-    
+
     .OT_publisher {
+      .OT_video-element {
+        object-fit: none;
+      }
 
-        .OT_video-element {
-          object-fit: none;
-        }
-
-        .OT_name {
-          display: none;
-        }
+      .OT_name {
+        display: none;
+      }
     }
 
     .MuiSvgIcon-root {
@@ -121,7 +120,7 @@
   }
 }
 
-.joinLink{
+.joinLink {
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -129,9 +128,9 @@
 }
 
 .copyButton {
-    height: 30px;
-    font-size: 12px;
-    border: 1px solid black;
+  height: 30px;
+  font-size: 12px;
+  border: 1px solid black;
 }
 
 

@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useRef} from "react";
-import logo from "../assets/Group.png";
-import { LanguageSelector } from "../LanguageSelector/LanguageSelector.js";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from 'react';
+import logo from '../assets/Group.png';
+import { LanguageSelector } from '../LanguageSelector/LanguageSelector.js';
+import { useLocation } from 'react-router-dom';
 import createSubscriberToken from './ExternalApiIntegration/createSubscriberToken.js';
-import { Button } from "@mui/material";
-import { useVonageSession } from '../Hooks/useVonageSession.js'
-import "./VideoChatComponent.scss";
+import { Button } from '@mui/material';
+import { useVonageSession } from '../Hooks/useVonageSession.js';
+import './VideoChatComponent.scss';
 
 export const JoiningVideoComponent = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const sessionId = searchParams.get("sessionId");
+  const sessionId = searchParams.get('sessionId');
   const [isWebinarStarted, setIsWebinarStarted] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [subscriberToken, setSubscriberToken] = useState(false);
   const [SelectedLanguage, setSelectedLanguage] = useState({
-    value: "ENG",
-    label: "ENGLISH",
+    value: 'ENG',
+    label: 'ENGLISH',
   });
   const [chunk, setChunk] = useState(null);
   const languageRef = useRef(false);
@@ -30,8 +30,6 @@ export const JoiningVideoComponent = () => {
     }
   }, [SelectedLanguage]);
 
-
-  
   const handleStartPublishing = () => {
     toggleSession();
     setIsWebinarStarted(true);
@@ -49,22 +47,15 @@ export const JoiningVideoComponent = () => {
       <div className="actions-btns">
         {isWebinarStarted && subscriberToken ? (
           <div className="joinLink">
-            <p className="mt-3">
-              English is the default language. Adjust language here:{" "}
-            </p>
+            <p className="mt-3">English is the default language. Adjust language here: </p>
             <LanguageSelector setSelectedLanguage={setSelectedLanguage} />
           </div>
-        ) : null }
-        { !isWebinarStarted && subscriberToken ? (
-          <Button
-            onClick={handleStartPublishing}
-            disabled={isWebinarStarted}
-            color="primary"
-            variant="contained"
-          >
+        ) : null}
+        {!isWebinarStarted && subscriberToken ? (
+          <Button onClick={handleStartPublishing} disabled={isWebinarStarted} color="primary" variant="contained">
             Join Webinar
           </Button>
-        ): null}
+        ) : null}
       </div>
       <div className="video-container">
         <>

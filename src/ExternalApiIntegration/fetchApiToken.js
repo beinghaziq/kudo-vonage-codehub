@@ -1,17 +1,16 @@
-import { baseService } from "./baseService.js";
+import { baseService } from './baseService.js';
 
 const FetchApiToken = async () => {
-
   try {
     const response = await baseService.post(
-      "https://auth-api.kudoway.com/api/sso/v1/oauth2/token",
+      'https://auth-api.kudoway.com/api/sso/v1/oauth2/token',
       {
-        client_id: "kudo-prod-payments-web-client",
-        client_secret: "4F4qk/KpemGJb3NKTTR0BRdlmrjRBlBh0L7hLbbqJFM=",
+        client_id: 'kudo-prod-payments-web-client',
+        client_secret: '4F4qk/KpemGJb3NKTTR0BRdlmrjRBlBh0L7hLbbqJFM=',
       },
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       }
     );
@@ -21,7 +20,7 @@ const FetchApiToken = async () => {
 
     return response.data.access_token;
   } catch (error) {
-    console.error("Error creating auth token:", error);
+    console.error('Error creating auth token:', error);
     return null;
   }
 };

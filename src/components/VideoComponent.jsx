@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
-import MicIcon from "@mui/icons-material/Mic.js";
-import MicOffIcon from "@mui/icons-material/MicOff.js";
-import VideocamIcon from "@mui/icons-material/Videocam.js";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff.js";
-import { Tooltip, Button } from "@mui/material";
-import OT from "@opentok/client";
-import RecordRTC, { StereoAudioRecorder } from "recordrtc";
-import logo from "../assets/Group.png";
-import { WebsocketConnection } from "../ExternalApiIntegration/websocketConnection.jsx";
-import { useLocation } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import CreateTranslationResource from "../ExternalApiIntegration/createTranslationResource.js";
+import React, { useState, useEffect, useRef } from 'react';
+import MicIcon from '@mui/icons-material/Mic.js';
+import MicOffIcon from '@mui/icons-material/MicOff.js';
+import VideocamIcon from '@mui/icons-material/Videocam.js';
+import VideocamOffIcon from '@mui/icons-material/VideocamOff.js';
+import { Tooltip, Button } from '@mui/material';
+import OT from '@opentok/client';
+import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
+import logo from '../assets/Group.png';
+import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnection.jsx';
+import { useLocation } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
-import { useVonagePublisher } from "../Hooks/useVonagePublisher";
-import "./VideoChatComponent.scss";
-import "react-toastify/dist/ReactToastify.css";
+import { useVonagePublisher } from '../Hooks/useVonagePublisher';
+import './VideoChatComponent.scss';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const VideoComponent = () => {
   const location = useLocation();
@@ -28,11 +28,17 @@ export const VideoComponent = () => {
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
   const [SelectedLanguage, setSelectedLanguage] = useState({
-    value: "ENG",
-    label: "ENGLISH",
+    value: 'ENG',
+    label: 'ENGLISH',
   });
-  const {session, toggleSession} = useVonageSession(opentokApiToken?.session_id, opentokApiToken?.publisher_token, setIsSessionConnected, SelectedLanguage);
-  const { createPublisher, publishTranslatedAudio, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming } = useVonagePublisher(session);
+  const { session, toggleSession } = useVonageSession(
+    opentokApiToken?.session_id,
+    opentokApiToken?.publisher_token,
+    setIsSessionConnected,
+    SelectedLanguage
+  );
+  const { createPublisher, publishTranslatedAudio, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming } =
+    useVonagePublisher(session);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
@@ -41,20 +47,18 @@ export const VideoComponent = () => {
     : null;
 
   useEffect(() => {
-      CreateTranslationResource(predefinedTargetLanguge, state.source, state.gender)
-        .then((id) => setResourceId(id))
-        .catch((error) =>
-          console.error("Error creating translation resource:", error)
-        );
+    CreateTranslationResource(predefinedTargetLanguge, state.source, state.gender)
+      .then((id) => setResourceId(id))
+      .catch((error) => console.error('Error creating translation resource:', error));
   }, []);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (isStreamSubscribed) {
       OT.getUserMedia({ audio: true })
         .then(function (stream) {
           recorderRef.current = new RecordRTC(stream, {
-            type: "audio",
-            mimeType: "audio/wav",
+            type: 'audio',
+            mimeType: 'audio/wav',
             recorderType: StereoAudioRecorder,
             timeSlice: 500,
             ondataavailable: function (data) {
@@ -64,14 +68,14 @@ export const VideoComponent = () => {
           recorderRef.current.startRecording();
         })
         .catch(function (error) {
-          console.error("Error accessing microphone:", error);
+          console.error('Error accessing microphone:', error);
         });
     }
-  }, [isStreamSubscribed])
+  }, [isStreamSubscribed]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(JoiningLink);
-    toast.success("Copied to Clipboard");
+    toast.success('Copied to Clipboard');
   };
 
   const onToggleAudio = (action) => {
@@ -111,32 +115,20 @@ export const VideoComponent = () => {
               <div className="video-tools">
                 {isAudioEnabled ? (
                   <Tooltip title="mic on">
-                    <MicIcon
-                      onClick={() => onToggleAudio(false)}
-                      className="on-icon"
-                    />
+                    <MicIcon onClick={() => onToggleAudio(false)} className="on-icon" />
                   </Tooltip>
                 ) : (
                   <Tooltip title="mic off">
-                    <MicOffIcon
-                      onClick={() => onToggleAudio(true)}
-                      className="off-icon"
-                    />
+                    <MicOffIcon onClick={() => onToggleAudio(true)} className="off-icon" />
                   </Tooltip>
                 )}
                 {isVideoEnabled ? (
                   <Tooltip title="camera on">
-                    <VideocamIcon
-                      onClick={() => onToggleVideo(false)}
-                      className="on-icon"
-                    />
+                    <VideocamIcon onClick={() => onToggleVideo(false)} className="on-icon" />
                   </Tooltip>
                 ) : (
                   <Tooltip title="camera off">
-                    <VideocamOffIcon
-                      onClick={() => onToggleVideo(true)}
-                      className="off-icon"
-                    />
+                    <VideocamOffIcon onClick={() => onToggleVideo(true)} className="off-icon" />
                   </Tooltip>
                 )}
               </div>
@@ -158,23 +150,13 @@ export const VideoComponent = () => {
       <h4 className="AppHeading">Multilingual Webinar powered by KUDO AI</h4>
       <div className="actions-btns">
         {isInterviewStarted && isSessionConnected ? (
-          <Button
-            onClick={handleStartPublishing}
-            color="primary"
-            variant="contained"
-            disabled={isStreamSubscribed}
-          >
+          <Button onClick={handleStartPublishing} color="primary" variant="contained" disabled={isStreamSubscribed}>
             Start Publishing
           </Button>
         ) : null}
         {opentokApiToken ? (
           <>
-            <Button
-              onClick={handleStartWebinar}
-              disabled={isInterviewStarted}
-              color="primary"
-              variant="contained"
-            >
+            <Button onClick={handleStartWebinar} disabled={isInterviewStarted} color="primary" variant="contained">
               Start Webinar
             </Button>
             <Button
@@ -201,14 +183,8 @@ export const VideoComponent = () => {
       ) : null}
 
       <div className="video-container">
-        <div id="publisher" className="main-video">
-        </div>
-        { isStreamSubscribed ? (
-           <div className="video-tool-bar">
-           { renderToolbar() }
-       </div>
-        ) : null}
-       
+        <div id="publisher" className="main-video"></div>
+        {isStreamSubscribed ? <div className="video-tool-bar">{renderToolbar()}</div> : null}
       </div>
 
       {chunk && resourceId && isStreamSubscribed ? (

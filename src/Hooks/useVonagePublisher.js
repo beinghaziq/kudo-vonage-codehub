@@ -1,12 +1,8 @@
-import { useState } from "react";
-import OT from "@opentok/client";
-import { predefinedLanguages } from "../constants/PredefinedLanguages.js";
-import { handleError } from "../Helpers/HandleError.js";
-import {
-  getAudioBuffer,
-  createAudioStream,
-  sendCaption,
-} from "../VonageIntegration/publishData.js";
+import { useState } from 'react';
+import OT from '@opentok/client';
+import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
+import { handleError } from '../Helpers/HandleError.js';
+import { getAudioBuffer, createAudioStream, sendCaption } from '../VonageIntegration/publishData.js';
 
 export const useVonagePublisher = (session) => {
   const [publishers, setPublishers] = useState({});
@@ -14,8 +10,7 @@ export const useVonagePublisher = (session) => {
   const targetLanguages = predefinedLanguages.map((language) => language.value);
 
   const createPublisher = () => {
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     // Create audio stream from mp3 file and video stream from webcam
     Promise.all([OT.getUserMedia({ videoSource: null })])
       .then((results) => {
@@ -24,9 +19,9 @@ export const useVonagePublisher = (session) => {
         const localPublishers = {};
         for (let i = 0; i < targetLanguages.length; i++) {
           const publisherOptions = {
-            insertMode: "append",
-            width: "100%",
-            height: "100%",
+            insertMode: 'append',
+            width: '100%',
+            height: '100%',
             // Pass in the generated audio track as our custom audioSource
             audioSource: audioStream.getAudioTracks()[0],
             // Enable stereo audio
@@ -37,7 +32,7 @@ export const useVonagePublisher = (session) => {
           };
 
           let publisher = OT.initPublisher(
-            "publisher",
+            'publisher',
             publisherOptions,
             // eslint-disable-next-line no-loop-func
             (error) => {
@@ -46,7 +41,7 @@ export const useVonagePublisher = (session) => {
               } else {
                 // If the connection is successful, publish the publisher1 to the session
                 session.publish(publisher, (error) => {
-                  console.log("session publish", publisher);
+                  console.log('session publish', publisher);
                   if (error) {
                     handleError(error);
                   }
@@ -64,16 +59,10 @@ export const useVonagePublisher = (session) => {
       });
   };
 
-  console.log("all publisher", publishers);
+  console.log('all publisher', publishers);
 
-  const publishTranslatedAudio = (
-    translatedBuffer,
-    websocketTargetLanguage,
-    userTargetLanguage,
-    CaptionText
-  ) => {
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
+  const publishTranslatedAudio = (translatedBuffer, websocketTargetLanguage, userTargetLanguage, CaptionText) => {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     // Create audio stream from mp3 file and video stream from webcam
     Promise.all([
       translatedBuffer ? getAudioBuffer(translatedBuffer, audioContext) : null,
@@ -86,9 +75,9 @@ export const useVonagePublisher = (session) => {
         targetLanguages.forEach((i) => {
           if (!publishers[i]) {
             const publisherOptions = {
-              insertMode: "append",
-              width: "100%",
-              height: "100%",
+              insertMode: 'append',
+              width: '100%',
+              height: '100%',
               // Pass in the generated audio track as our custom audioSource
               audioSource: audioStream ? audioStream.getAudioTracks()[0] : null,
               // Enable stereo audio
@@ -99,7 +88,7 @@ export const useVonagePublisher = (session) => {
             };
 
             publishers[i] = OT.initPublisher(
-              "publisher",
+              'publisher',
               publisherOptions,
               // eslint-disable-next-line no-loop-func
               (error) => {
@@ -116,20 +105,11 @@ export const useVonagePublisher = (session) => {
               }
             );
           } else {
-            console.log(
-              "Publishing the audio....",
-              websocketTargetLanguage,
-              targetLanguages[i]
-            );
+            console.log('Publishing the audio....', websocketTargetLanguage, targetLanguages[i]);
             // If publisher1 is already initialized, update the audio source
             if (websocketTargetLanguage === i) {
-              console.log("===============");
-              sendCaption(
-                session,
-                CaptionText,
-                userTargetLanguage,
-                websocketTargetLanguage
-              );
+              console.log('===============');
+              sendCaption(session, CaptionText, userTargetLanguage, websocketTargetLanguage);
               publishers[i].publishAudio(false); // Stop publishing audio temporarily
               publishers[i].setAudioSource(audioStream.getAudioTracks()[0]); // Set new audio source
               publishers[i].publishAudio(true); // Start publishing audio again

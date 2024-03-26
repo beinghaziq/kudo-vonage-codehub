@@ -1,14 +1,14 @@
 // Ensure you have installed the following React packages: react-use-websocket and file-saver
-import useWebSocket from "react-use-websocket";
-import { useCallback, useEffect, useState } from "react";
-import { AUTH_TOKEN } from "../config.js";
+import useWebSocket from 'react-use-websocket';
+import { useCallback, useEffect, useState } from 'react';
+import { AUTH_TOKEN } from '../config.js';
 
 export const WebsocketConnection = ({
   dataBlobUrl,
   resourceId,
   isInterviewStarted,
   userTargetLanguage,
-  publishTranslatedAudio
+  publishTranslatedAudio,
 }) => {
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
   const API_TOKEN = AUTH_TOKEN;
@@ -16,10 +16,10 @@ export const WebsocketConnection = ({
   const [playingQueue, setPlayingQueue] = useState([]);
   // converting the data to valid binary format
   function convertDataURIToBinary(dataURI) {
-    var BASE64_MARKER = ";base64,";
+    var BASE64_MARKER = ';base64,';
     var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
     var base64 = dataURI.substring(base64Index);
-    var raw = window.atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
+    var raw = window.atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
     var rawLength = raw.length;
     var array = new Uint8Array(new ArrayBuffer(rawLength));
 
@@ -31,16 +31,16 @@ export const WebsocketConnection = ({
 
   const { getWebSocket, sendMessage } = useWebSocket(SERVER_URL, {
     onOpen: () => {
-      console.log("WebSocket connection established.");
+      console.log('WebSocket connection established.');
     },
     onMessage: (message) => {
       let data = JSON.parse(message.data);
-      console.log("Translating your audio...");
-      console.log("Websocket response", data);
+      console.log('Translating your audio...');
+      console.log('Websocket response', data);
 
-      var data1 = "audio/wav;base64," + data.audioData;
+      var data1 = 'audio/wav;base64,' + data.audioData;
       var bufferData = convertDataURIToBinary(data1);
-      var audioBlob = new Blob([bufferData], { type: "audio/wav" });
+      var audioBlob = new Blob([bufferData], { type: 'audio/wav' });
 
       var reader = new FileReader();
       reader.onload = function (event) {
@@ -53,11 +53,11 @@ export const WebsocketConnection = ({
       }
     },
     onClose: (e) => {
-      console.log("closed", e);
+      console.log('closed', e);
     },
-    onError: (e) => console.error("Error in websocket", e),
+    onError: (e) => console.error('Error in websocket', e),
     shouldReconnect: () => false,
-    protocols: ["Authorization", API_TOKEN],
+    protocols: ['Authorization', API_TOKEN],
   });
 
   // converting audio blob to float32array and send to websocket
@@ -76,29 +76,23 @@ export const WebsocketConnection = ({
   const publishToSubs = useCallback((message) => {
     setIsPlaying(true);
     let data = JSON.parse(message.data);
-    console.log("Translating your audio...");
-    console.log("Websocket response", data);
+    console.log('Translating your audio...');
+    console.log('Websocket response', data);
 
-    var data1 = "audio/wav;base64," + data.audioData;
+    var data1 = 'audio/wav;base64,' + data.audioData;
     var bufferData = convertDataURIToBinary(data1);
-    var audioBlob = new Blob([bufferData], { type: "audio/wav" });
+    var audioBlob = new Blob([bufferData], { type: 'audio/wav' });
 
     var reader = new FileReader();
     reader.onload = function (event) {
       var audioData = event.target.result;
-      publish(
-        audioData,
-        data.targetLanguage,
-        userTargetLanguage,
-        data.text,
-        setIsPlaying
-      );
+      publish(audioData, data.targetLanguage, userTargetLanguage, data.text, setIsPlaying);
     };
     reader.readAsArrayBuffer(audioBlob);
     if (!isInterviewStarted) {
       getWebSocket().close();
     }
-  })
+  });
 
   // render convertBlobToArray function for every chunk of data
   useEffect(() => {
@@ -106,7 +100,7 @@ export const WebsocketConnection = ({
   }, [dataBlobUrl, convertBlobToArray]);
 
   useEffect(() => {
-    if(!isPlaying && playingQueue.length > 0) {
+    if (!isPlaying && playingQueue.length > 0) {
       publishToSubs(playingQueue[0]);
       setPlayingQueue(playingQueue.slice(1));
     }
