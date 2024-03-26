@@ -18,6 +18,8 @@ export const useVonageSession = (
   const [subscriber, setSubscriber] = useState();
   const [streams, setStreams] = useState([]);
 
+  console.log({selectedTargetLanguage});
+
   useEffect(() => {
     if (session) {
       // Connect to the session
@@ -42,45 +44,46 @@ export const useVonageSession = (
         )
       );
     }
-  }, [session]);
+  }, [selectedTargetLanguage, session, setIsSessionConnected, token]);
 
-  const toggleSession = () =>{
-    if(session && session.isConnected()){
+  const toggleSession = () => {
+    if (session && session.isConnected()) {
       session.disconnect();
       setSession(null);
-    }else {
+    } else {
       setSession(OT.initSession(API_KEY, subscriberId));
     }
-  }
+  };
 
   const reSubscribeStreams = () => {
-    if(subscriber){
+    console.log({ subscriber, streams });
+    if (subscriber) {
       session.unsubscribe(subscriber);
     }
     console.log("Session unsubscribed");
-  
+
     for (let i = 0; i < streams.length; i++) {
-      if(streams[i].name === selectedTargetLanguage){
+      if (streams[i].name === selectedTargetLanguage) {
         console.log("Session resubscribed with language", streams[i].name);
         setSubscriber(
           session.subscribe(
-          streams[i],
-          "subscriber",
-          {
-            insertMode: "append",
-            width: "100%",
-            height: "100%",
-          },
-          handleError
-        ));
+            streams[i],
+            "subscriber",
+            {
+              insertMode: "append",
+              width: "100%",
+              height: "100%",
+            },
+            handleError
+          )
+        );
       }
-  
     }
-  }
+  };
 
   return {
     session,
     toggleSession,
-    reSubscribeStreams
-  }
+    reSubscribeStreams,
+  };
 };

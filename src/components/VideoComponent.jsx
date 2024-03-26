@@ -79,9 +79,8 @@ export const VideoComponent = () => {
     toggleAudio(action);
   };
   const handleStartPublishing = () => {
-    createPublisher();
     setIsStreamSubscribed(true);
-    publish(translatedBuffer);
+    createPublisher();
   };
 
   const handleStartWebinar = () => {
@@ -200,6 +199,7 @@ export const VideoComponent = () => {
           </div>
         </>
       ) : null}
+
       <div className="video-container">
         <div id="publisher" className="main-video">
         </div>

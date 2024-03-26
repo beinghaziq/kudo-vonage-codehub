@@ -2,6 +2,8 @@ import { addCaptionsForSubscriber } from "../VonageIntegration/AddCaptionsForSub
 import { handleError } from './HandleError.js'
 
 export const captionSignalEvent = (event, selectedTargetLanguage) => {
+  console.log({selectedTargetLanguage});
+
   if (event.data.websocketTargetLanguage === selectedTargetLanguage) {
     addCaptionsForSubscriber(event.data.captionText);
   }
