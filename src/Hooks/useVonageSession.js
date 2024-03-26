@@ -5,12 +5,10 @@ import { captionSignalEvent, streamCreatedEvent } from '../Helpers/SessionEventC
 
 import { API_KEY } from '../config.js';
 
-export const useVonageSession = (subscriberId, token, setIsSessionConnected, selectedTargetLanguage) => {
+export const useVonageSession = (subscriberId, token, setIsSessionConnected, selectedTargetLanguage = 'ENG') => {
   const [session, setSession] = useState();
   const [subscriber, setSubscriber] = useState();
   const [streams, setStreams] = useState([]);
-
-  console.log({ selectedTargetLanguage });
 
   useEffect(() => {
     if (session) {

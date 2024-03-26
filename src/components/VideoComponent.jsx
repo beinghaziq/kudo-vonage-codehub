@@ -34,8 +34,7 @@ export const VideoComponent = () => {
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
     opentokApiToken?.publisher_token,
-    setIsSessionConnected,
-    SelectedLanguage
+    setIsSessionConnected
   );
   const { createPublisher, publishTranslatedAudio, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming } =
     useVonagePublisher(session);
@@ -194,7 +193,6 @@ export const VideoComponent = () => {
           setTranslatedBuffer={setTranslatedBuffer}
           isInterviewStarted={isInterviewStarted}
           resourceId={resourceId}
-          userTargetLanguage={SelectedLanguage.value}
           publishTranslatedAudio={publishTranslatedAudio}
         />
       ) : null}

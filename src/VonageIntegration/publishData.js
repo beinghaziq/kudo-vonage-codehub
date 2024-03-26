@@ -26,11 +26,11 @@ export function createAudioStream(audioBuffer, audioContext) {
   };
 }
 
-export function sendCaption(session, captionText, userTargetLanguage, websocketTargetLanguage) {
+export function sendCaption(session, captionText, websocketTargetLanguage) {
   session.signal(
     {
       type: 'caption',
-      data: { captionText, userTargetLanguage, websocketTargetLanguage },
+      data: { captionText, websocketTargetLanguage },
     },
     function (error) {
       if (error) {

@@ -57,7 +57,7 @@ export const useVonagePublisher = (session) => {
       });
   };
 
-  const publishTranslatedAudio = (translatedBuffer, websocketTargetLanguage, userTargetLanguage, CaptionText) => {
+  const publishTranslatedAudio = (translatedBuffer, websocketTargetLanguage, CaptionText) => {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     // Create audio stream from mp3 file and video stream from webcam
     Promise.all([
@@ -78,7 +78,6 @@ export const useVonagePublisher = (session) => {
         sendCaption(
           session,
           CaptionText,
-          userTargetLanguage,
           websocketTargetLanguage
         );
         publishers[websocketTargetLanguage].publishCaptions(true);

@@ -7,7 +7,6 @@ export const WebsocketConnection = ({
   dataBlobUrl,
   resourceId,
   isInterviewStarted,
-  userTargetLanguage,
   publishTranslatedAudio,
 }) => {
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
@@ -45,7 +44,7 @@ export const WebsocketConnection = ({
       var reader = new FileReader();
       reader.onload = function (event) {
         var audioData = event.target.result;
-        publishTranslatedAudio(audioData, data.targetLanguage, userTargetLanguage, data.text);
+        publishTranslatedAudio(audioData, data.targetLanguage, data.text);
       };
       reader.readAsArrayBuffer(audioBlob);
       if (!isInterviewStarted) {
