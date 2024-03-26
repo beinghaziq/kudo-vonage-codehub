@@ -63,7 +63,7 @@ export const JoiningVideoComponent = () => {
         {isWebinarStarted ? (
           <div className="joinLink">
             <p className="mt-3">
-              Hindi is the default language. Adjust language here:{" "}
+              English is the default language. Adjust language here:{" "}
             </p>
             <LanguageSelector setSelectedLanguage={setSelectedLanguage} />
           </div>
