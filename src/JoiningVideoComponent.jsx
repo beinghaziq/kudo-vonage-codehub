@@ -16,8 +16,8 @@ export const JoiningVideoComponent = () => {
   const subToken = searchParams.get("SubToken");
   const [isWebinarStarted, setIsWebinarStarted] = useState(false);
   const [SelectedLanguage, setSelectedLanguage] = useState({
-    value: "HIN",
-    label: "HINDI",
+    value: "ENG",
+    label: "ENGLISH",
   });
   const [streams, setStreams] = useState([]);
   const [chunk, setChunk] = useState(null);

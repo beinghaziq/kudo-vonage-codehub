@@ -34,8 +34,8 @@ export const VideoComponent = () => {
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
   const [SelectedLanguage, setSelectedLanguage] = useState({
-    value: "HIN",
-    label: "HINDI",
+    value: "ENG",
+    label: "ENGLISH",
   });
   const [streams, setStreams] = useState([]);
   const [chunk, setChunk] = useState(null);
