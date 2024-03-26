@@ -37,12 +37,10 @@ export const useVonageSession = (
           event,
           setStreams,
           selectedTargetLanguage,
-          subscriber,
+          setSubscriber,
           session
         )
       );
-    }else {
-      
     }
   }, [session]);
 
@@ -55,33 +53,34 @@ export const useVonageSession = (
     }
   }
 
-  // useEffect(() => {
-  //   if (subscriber) {
-  //     session.unsubscribe(subscriber);
-  //   }
-  //   console.log("Session unsubscribed");
-
-  //   for (let i = 0; i < streams.length; i++) {
-  //     if (streams[i].name === selectedTargetLanguage) {
-  //       console.log("Session resubscribed with language", streams[i].name);
-  //       setSubscriber(
-  //         session.subscribe(
-  //           streams[i],
-  //           "subscriber",
-  //           {
-  //             insertMode: "append",
-  //             width: "100%",
-  //             height: "100%",
-  //           },
-  //           handleError
-  //         )
-  //       );
-  //     }
-  //   }
-  // }, [selectedTargetLanguage]);
+  const reSubscribeStreams = () => {
+    if(subscriber){
+      session.unsubscribe(subscriber);
+    }
+    console.log("Session unsubscribed");
+  
+    for (let i = 0; i < streams.length; i++) {
+      if(streams[i].name === selectedTargetLanguage){
+        console.log("Session resubscribed with language", streams[i].name);
+        setSubscriber(
+          session.subscribe(
+          streams[i],
+          "subscriber",
+          {
+            insertMode: "append",
+            width: "100%",
+            height: "100%",
+          },
+          handleError
+        ));
+      }
+  
+    }
+  }
 
   return {
     session,
     toggleSession,
+    reSubscribeStreams
   }
 };

@@ -89,8 +89,37 @@ export const useVonagePublisher = (session) => {
       });
   };
 
+  // The following functions are used in functionality customization
+const toggleVideo = (state) => {
+  publishers.forEach(pub => {
+    pub.publishVideo(state);
+  });
+}
+const toggleAudio = (state) => {
+  publishers.forEach(pub => {
+    pub.publishAudio(state);
+  });
+}
+
+const togglePublisherDestroy = () => {
+  publishers.forEach(pub => {
+    pub.disconnect();
+  });
+}
+
+const stopStreaming = () => {
+  if (session) {
+    publishers.forEach(pub => {
+      session.unpublish(pub); 
+    });
+  }
+}
+
   return {
-    publishers,
+    toggleVideo,
+    toggleAudio,
+    togglePublisherDestroy,
+    stopStreaming,
     createPublisher,
     publishTranslatedAudio
   };

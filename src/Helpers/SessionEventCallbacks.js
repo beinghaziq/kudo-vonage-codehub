@@ -8,7 +8,7 @@ export const captionSignalEvent = (event, selectedTargetLanguage) => {
   console.log("Received caption:", event.data);
 };
 
-export const streamCreatedEvent = (event, setStreams, selectedTargetLanguage, subscriber, session) => {
+export const streamCreatedEvent = (event, setStreams, selectedTargetLanguage, setSubscriber, session) => {
     const subscriberOptions = {
       insertMode: "append",
       width: "100%",
@@ -20,12 +20,12 @@ export const streamCreatedEvent = (event, setStreams, selectedTargetLanguage, su
     //   [event.stream.name]: event.stream
     // }));
     if (selectedTargetLanguage === event.stream.name) {
-      subscriber = session.subscribe(
+      setSubscriber(session.subscribe(
         event.stream,
         "subscriber",
         subscriberOptions,
         handleError
-      );
+      ));
       console.log("subscriber", event);
     }
 };

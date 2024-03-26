@@ -7,12 +7,6 @@ import { Tooltip, Button } from "@mui/material";
 import OT from "@opentok/client";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import logo from "../assets/Group.png";
-import {
-  toggleAudio,
-  toggleVideo,
-  togglePublisherDestroy,
-  stopStreaming,
-} from "../VonageIntegration/publishData.js";
 import { WebsocketConnection } from "../ExternalApiIntegration/websocketConnection.jsx";
 import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -38,25 +32,13 @@ export const VideoComponent = () => {
     label: "ENGLISH",
   });
   const {session, toggleSession} = useVonageSession(opentokApiToken?.session_id, opentokApiToken?.publisher_token, setIsSessionConnected, SelectedLanguage);
-  const { createPublisher, publishTranslatedAudio } = useVonagePublisher(session);
+  const { createPublisher, publishTranslatedAudio, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming } = useVonagePublisher(session);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
   const JoiningLink = opentokApiToken
     ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}`
     : null;
-
-  useEffect(() => {
-    if (isInterviewStarted) {
-      // call hook for session
-    } else {
-      stopStreaming();
-
-      if (recorderRef.current) {
-        recorderRef.current.stopRecording();
-      }
-    }
-  }, [isInterviewStarted]);
 
   useEffect(() => {
       CreateTranslationResource(predefinedTargetLanguge, state.source, state.gender)
@@ -113,6 +95,10 @@ export const VideoComponent = () => {
   };
 
   const onTogglePublisherDestroy = (action) => {
+    stopStreaming();
+    if (recorderRef.current) {
+      recorderRef.current.stopRecording();
+    }
     setIsInterviewStarted(action);
     togglePublisherDestroy();
   };

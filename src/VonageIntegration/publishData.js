@@ -46,32 +46,6 @@ export function sendCaption(session, captionText, userTargetLanguage, websocketT
       });
 }
 
-// The following functions are used in functionality customization
-export function toggleVideo(state) {
-  // publisher.forEach(pub => {
-  //   pub.publishVideo(state);
-  // });
-}
-export function toggleAudio(state) {
-  // publisher.forEach(pub => {
-  //   pub.publishAudio(state);
-  // });
-}
-
-export function togglePublisherDestroy() {
-  // publisher.forEach(pub => {
-  //   pub.disconnect();
-  // });
-}
-
-export function stopStreaming() {
-  // if (session) {
-  //   publisher.forEach(pub => {
-  //     session.unpublish(pub); 
-  //   });
-  // }
-}
-
 export function createPublisher(session, publisher, setPublisher) {
   for (let i = 0; i < targetLanguages.length; i++) {
     const publisherOptions = {

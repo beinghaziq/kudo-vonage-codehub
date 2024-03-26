@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import logo from "../assets/Group.png";
 import { LanguageSelector } from "../LanguageSelector/LanguageSelector.js";
 import { useLocation } from "react-router-dom";
@@ -19,12 +19,20 @@ export const JoiningVideoComponent = () => {
     label: "ENGLISH",
   });
   const [chunk, setChunk] = useState(null);
-  const { toggleSession } = useVonageSession(sessionId, subToken, setChunk, SelectedLanguage.value);
+  const languageRef = useRef(false);
+  const { toggleSession, reSubscribeStreams } = useVonageSession(sessionId, subToken, setChunk, SelectedLanguage.value);
 
+  useEffect(() => {
+    if (languageRef.current) {
+      reSubscribeStreams();
+    } else {
+      languageRef.current = true;
+    }
+  }, [SelectedLanguage]);
 
 
   
-  const HandleStartPublishing = () => {
+  const handleStartPublishing = () => {
     toggleSession();
     setIsWebinarStarted(true);
   };
@@ -49,7 +57,7 @@ export const JoiningVideoComponent = () => {
         ) : null }
         { !isWebinarStarted && subscriberToken ? (
           <Button
-            onClick={HandleStartPublishing}
+            onClick={handleStartPublishing}
             disabled={isWebinarStarted}
             color="primary"
             variant="contained"
