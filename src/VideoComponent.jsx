@@ -103,8 +103,8 @@ export const VideoComponent = () => {
     toggleAudio(action);
   };
   const handleStartPublishing = () => {
-    publish(translatedBuffer);
     setIsStreamSubscribed(true);
+    publish(translatedBuffer);
   };
 
   const onToggleVideo = (action) => {

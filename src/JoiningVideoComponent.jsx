@@ -15,6 +15,7 @@ export const JoiningVideoComponent = () => {
   const sessionId = searchParams.get("sessionId");
   const subToken = searchParams.get("SubToken");
   const [isWebinarStarted, setIsWebinarStarted] = useState(false);
+  const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [SelectedLanguage, setSelectedLanguage] = useState({
     value: "ENG",
     label: "ENGLISH",
@@ -37,7 +38,8 @@ export const JoiningVideoComponent = () => {
         isHost,
         SelectedLanguage.value,
         streams,
-        setStreams
+        setStreams,
+        setIsSessionConnected
       );
     }
   }, [isWebinarStarted]);
