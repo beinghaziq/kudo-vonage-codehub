@@ -13,6 +13,7 @@ import { createVonageApiTokens } from '../ExternalApiIntegration/createVonageApi
 export const WebinarJoiningForm = () => {
   const navigate = useNavigate();
   const [selectedGender, setSelectedGender] = useState('female');
+  const [isClicked, setIsClicked] = useState(false);
 
   const [form, setForm] = useState({
     name: '',
@@ -28,6 +29,7 @@ export const WebinarJoiningForm = () => {
   }));
 
   const submitButton = (e) => {
+    setIsClicked(true);
     e.preventDefault();
     createVonageApiTokens()
       .then((tokens) => {
@@ -114,6 +116,7 @@ export const WebinarJoiningForm = () => {
                 className="text-black p-[0.35rem] w-[20.9375rem] rounded rounded-md border-none bg-[#F8C73E] hover:bg-[#F8C73E]"
                 value="submit"
                 type="submit"
+                disabled={isClicked}
                 onClick={submitButton}
               >
                 Join webinar
@@ -122,7 +125,7 @@ export const WebinarJoiningForm = () => {
           </div>
           <div className="relative">
             <span className="text-black text-center font-roboto text-sm font-normal">
-              By clicking Join you agree to the KUDO
+              By clicking &quot;Join&quot; you agree to the KUDO
             </span>
             <span className="text-blue-600 font-roboto text-sm font-normal no-underline">
               <a href={TERMS_CONDITIONS_LINK} target="_blank" rel="noreferrer">
