@@ -3,7 +3,7 @@ import { baseService } from "./baseService.js";
 const createSubscriberToken = async (sessionId) => {
   try {
     const response = await baseService.put(
-      "http://localhost:3002/api/v1/external_api/sessions",
+      "https://marketplaceapi-staging.meetkudo.com/api/v1/external_api/sessions",
       {
         session_id: sessionId,
       },
