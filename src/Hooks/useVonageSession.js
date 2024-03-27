@@ -21,6 +21,7 @@ export const useVonageSession = (subscriberId, token, setIsSessionConnected, sel
         } else {
         }
       });
+      session.off('signal:caption');
       session.on('signal:caption', (event) => captionSignalEvent(event, selectedTargetLanguage));
       session.on('streamCreated', (event) =>
         streamCreatedEvent(event, setStreams, selectedTargetLanguage, setSubscriber, session)
