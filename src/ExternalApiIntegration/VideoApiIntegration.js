@@ -75,6 +75,7 @@ export function initializeSession(
     };
     setStreams(prevStreams => [...prevStreams, event.stream]);
     if (SelectedLanguage === event.stream.name) {
+      console.log("in streamCreated", { SelectedLanguage }, {"name": event.stream.name});
       subscriber = session.subscribe(
         event.stream,
         "subscriber",
