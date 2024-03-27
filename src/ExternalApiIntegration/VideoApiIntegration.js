@@ -87,7 +87,8 @@ export function initializeSession(
   });
 
   session.on('signal:caption', function(event) {
-    if(event.data.websocketTargetLanguage === selectedTargetLanguage){
+    if(event.data.websocketTargetLanguage === selectedTargetLanguage && !isHost){
+      console.log('Specific Language caption:',selectedTargetLanguage, event.data.captionText);
       addCaptionsForSubscriber(event.data.captionText);
     }
     console.log('Received caption:', event.data);
@@ -170,7 +171,6 @@ export function reSubscribeStreams(streams, userTargetLanguage) {
 }
 
 export function addCaptionsForSubscriber(CaptionText){
-  if(OT.subscribers.find()){
     const subscriberContainer = OT.subscribers.find().element;
       const [subscriberWidget] = subscriberContainer.getElementsByClassName(
         'OT_widget-container'
@@ -187,7 +187,6 @@ export function addCaptionsForSubscriber(CaptionText){
         const oldCaptionBox = subscriberWidget.querySelector('.caption-box');
         if (oldCaptionBox) oldCaptionBox.remove();
       }, removalTimerDuration);
-  }
 }
 
 function getAudioBuffer(buffer, audioContext) {
@@ -267,11 +266,11 @@ export function publish(translatedBuffer, websocketTargetLanguage, userTargetLan
           console.log("Publishing the audio....");
           // If publisher1 is already initialized, update the audio source
           if (websocketTargetLanguage === predefinedTargetLanguge[i]) {
+            sendCaption(session, CaptionText, userTargetLanguage, websocketTargetLanguage);
             publisher[i].publishAudio(false); // Stop publishing audio temporarily
             publisher[i].setAudioSource(audioStream.getAudioTracks()[0]); // Set new audio source
             publisher[i].publishAudio(true); // Start publishing audio again
             publisher[i].publishCaptions(true);
-            sendCaption(session, CaptionText, userTargetLanguage, websocketTargetLanguage);
           }
         }
       }
