@@ -6,6 +6,7 @@ import {
 } from "./ExternalApiIntegration/VideoApiIntegration.js";
 import { LanguageSelector } from "./LanguageSelector/LanguageSelector.js";
 import { useLocation } from "react-router-dom";
+import createSubscriberToken from './ExternalApiIntegration/createSubscriberToken.js';
 import { Button } from "@mui/material";
 import "./VideoChatComponent.scss";
 
@@ -13,9 +14,9 @@ export const JoiningVideoComponent = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const sessionId = searchParams.get("sessionId");
-  const subToken = searchParams.get("SubToken");
   const [isWebinarStarted, setIsWebinarStarted] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
+  const [subscriberToken, setSubscriberToken] = useState(false);
   const [SelectedLanguage, setSelectedLanguage] = useState({
     value: "ENG",
     label: "ENGLISH",
@@ -24,7 +25,7 @@ export const JoiningVideoComponent = () => {
   const [chunk, setChunk] = useState(null);
   const [opentokApiToken, setOpentokApiToken] = useState({
     session_id: sessionId,
-    subscriber_token: subToken,
+    subscriber_token: subscriberToken,
   });
   const languageRef = useRef(false);
   const recorderRef = useRef(null);
@@ -45,6 +46,17 @@ export const JoiningVideoComponent = () => {
   }, [isWebinarStarted]);
 
   useEffect(() => {
+    createSubscriberToken(sessionId)
+        .then((token) => {
+          setSubscriberToken(token.subscriber_token);
+          setOpentokApiToken({...opentokApiToken, subscriber_token: token.subscriber_token})
+        })
+        .catch((error) =>
+          console.error("Error creating subscriber id:", error)
+        );
+  }, []);
+
+  useEffect(() => {
     if (languageRef.current) {
       reSubscribeStreams(streams, SelectedLanguage.value);
     } else {
@@ -62,23 +74,24 @@ export const JoiningVideoComponent = () => {
       </div>
       <h4 className="AppHeading">Multilingual Webinar powered by KUDO AI</h4>
       <div className="actions-btns">
-        {isWebinarStarted ? (
+        {isWebinarStarted && subscriberToken ? (
           <div className="joinLink">
             <p className="mt-3">
               English is the default language. Adjust language here:{" "}
             </p>
             <LanguageSelector setSelectedLanguage={setSelectedLanguage} />
           </div>
-        ) : (
+        ) : null }
+        { !isWebinarStarted && subscriberToken ? (
           <Button
-            onClick={() => setIsWebinarStarted(true)}
-            disabled={isWebinarStarted}
-            color="primary"
-            variant="contained"
-          >
-            Join Webinar
-          </Button>
-        )}
+          onClick={() => setIsWebinarStarted(true)}
+          disabled={isWebinarStarted}
+          color="primary"
+          variant="contained"
+        >
+          Join Webinar
+        </Button>
+        ) : null}
       </div>
       <div className="video-container">
         <>

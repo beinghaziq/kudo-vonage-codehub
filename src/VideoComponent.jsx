@@ -44,7 +44,7 @@ export const VideoComponent = () => {
   const languageRef = useRef(false);
   const recorderRef = useRef(null);
   const JoiningLink = opentokApiToken
-    ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}&SubToken=${opentokApiToken.subscriber_token}`
+    ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}`
     : null;
 
   const isHost = true;
@@ -216,8 +216,13 @@ export const VideoComponent = () => {
       ) : null}
       <div className="video-container">
         <div id="publisher" className="main-video">
-          {isStreamSubscribed && renderToolbar()}
         </div>
+        { isStreamSubscribed ? (
+           <div className="video-tool-bar">
+           { renderToolbar() }
+       </div>
+        ) : null}
+       
       </div>
 
       {chunk && resourceId ? (
