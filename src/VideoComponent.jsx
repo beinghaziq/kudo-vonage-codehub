@@ -225,7 +225,7 @@ export const VideoComponent = () => {
        
       </div>
 
-      {chunk && resourceId ? (
+      {chunk && resourceId && isStreamSubscribed ? (
         <WebsocketConnection
           dataBlobUrl={chunk}
           translatedBuffer={translatedBuffer}
