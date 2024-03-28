@@ -13,7 +13,7 @@ export const LanguageSelector = ({ setSelectedLanguage }) => {
     <div className="languageSelector">
       <div className="m-auto text-light">
         <Select
-          placeholder="Change langauge..."
+          placeholder="Change language..."
           className="options"
           options={predefinedLanguages}
           onChange={handleChange}
