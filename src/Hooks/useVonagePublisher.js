@@ -70,10 +70,10 @@ export const useVonagePublisher = (session) => {
 
         console.log('Publishing the audio....');
         // If publisher1 is already initialized, update the audio source
+        sendCaption(session, CaptionText, websocketTargetLanguage);
         publishers[websocketTargetLanguage].publishAudio(false); // Stop publishing audio temporarily
         publishers[websocketTargetLanguage].setAudioSource(audioStream.getAudioTracks()[0]); // Set new audio source
         publishers[websocketTargetLanguage].publishAudio(true); // Start publishing audio again
-        sendCaption(session, CaptionText, websocketTargetLanguage);
         publishers[websocketTargetLanguage].publishCaptions(true);
       })
       .catch((error) => {

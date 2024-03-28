@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import logo from '../assets/Group.png';
 import { LanguageSelector } from '../LanguageSelector/LanguageSelector.js';
 import { useLocation } from 'react-router-dom';
-import createSubscriberToken from './ExternalApiIntegration/createSubscriberToken.js';
+import createSubscriberToken from '../ExternalApiIntegration/createSubscriberToken.js';
 import { Button } from '@mui/material';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
 import './VideoChatComponent.scss';
@@ -12,7 +12,6 @@ export const JoiningVideoComponent = () => {
   const searchParams = new URLSearchParams(location.search);
   const sessionId = searchParams.get('sessionId');
   const [isWebinarStarted, setIsWebinarStarted] = useState(false);
-  const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [subscriberToken, setSubscriberToken] = useState(false);
   const [SelectedLanguage, setSelectedLanguage] = useState({
     value: 'ENG',
@@ -20,7 +19,12 @@ export const JoiningVideoComponent = () => {
   });
   const [chunk, setChunk] = useState(null);
   const languageRef = useRef(false);
-  const { toggleSession, reSubscribeStreams } = useVonageSession(sessionId, subToken, setChunk, SelectedLanguage.value);
+  const { toggleSession, reSubscribeStreams } = useVonageSession(
+    sessionId,
+    subscriberToken,
+    setChunk,
+    SelectedLanguage.value
+  );
 
   useEffect(() => {
     if (languageRef.current) {
@@ -29,6 +33,14 @@ export const JoiningVideoComponent = () => {
       languageRef.current = true;
     }
   }, [SelectedLanguage]);
+
+  useEffect(() => {
+    createSubscriberToken(sessionId)
+      .then((token) => {
+        setSubscriberToken(token.subscriber_token);
+      })
+      .catch((error) => console.error('Error creating subscriber id:', error));
+  }, []);
 
   const handleStartPublishing = () => {
     toggleSession();

@@ -27,10 +27,6 @@ export const VideoComponent = () => {
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
-  const [SelectedLanguage, setSelectedLanguage] = useState({
-    value: 'ENG',
-    label: 'ENGLISH',
-  });
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
     opentokApiToken?.publisher_token,

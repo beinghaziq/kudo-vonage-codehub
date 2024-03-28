@@ -1,26 +1,26 @@
-import { baseService } from "./baseService.js";
+import { baseService } from './baseService.js';
 
 const createSubscriberToken = async (sessionId) => {
   try {
     const response = await baseService.put(
-      "https://marketplaceapi-staging.meetkudo.com/api/v1/external_api/sessions",
+      'https://marketplaceapi-staging.meetkudo.com/api/v1/external_api/sessions',
       {
         session_id: sessionId,
       },
       {
         headers: {
-          "Content-Type": "application/json",
-          "HTTP-X-API-TOKEN": "daceac4f6a07265eef17857c",
+          'Content-Type': 'application/json',
+          'HTTP-X-API-TOKEN': 'daceac4f6a07265eef17857c',
         },
       }
     );
     if (!response.data) {
-      throw new Error("Failed to create translation resource");
+      throw new Error('Failed to create translation resource');
     }
 
     return response.data;
   } catch (error) {
-    console.error("Error creating translation resource:", error);
+    console.error('Error creating translation resource:', error);
     return null;
   }
 };
