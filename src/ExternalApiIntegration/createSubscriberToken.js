@@ -1,10 +1,12 @@
 import { baseService } from './baseService.js';
 
-export const createVonageApiTokens = async () => {
+const createSubscriberToken = async (sessionId) => {
   try {
-    const response = await baseService.post(
+    const response = await baseService.put(
       'https://marketplaceapi-staging.meetkudo.com/api/v1/external_api/sessions',
-      {},
+      {
+        session_id: sessionId,
+      },
       {
         headers: {
           'Content-Type': 'application/json',
@@ -22,3 +24,5 @@ export const createVonageApiTokens = async () => {
     return null;
   }
 };
+
+export default createSubscriberToken;

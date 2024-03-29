@@ -1,10 +1,5 @@
-import React from "react";
-
+import React from 'react';
 
 export const Health = () => {
-  
-  return (
-    <div className="Formcontainer">
-    </div>
-  );
+  return <div className="Formcontainer"></div>;
 };
