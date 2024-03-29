@@ -99,6 +99,7 @@ export const WebinarJoiningForm = () => {
                   <p className="text-black mb-2">Select your Voice Preference</p>
                   <div className="flex gap-2">
                     <input
+                      style={{ accentColor: '#065985' }}
                       type="radio"
                       id="female"
                       label="Female"
@@ -108,6 +109,7 @@ export const WebinarJoiningForm = () => {
                     />
                     <label htmlFor="html">Female</label>
                     <input
+                      style={{ accentColor: '#065985' }}
                       type="radio"
                       id="male"
                       label="Male"
