@@ -30,12 +30,15 @@ export const WebinarJoiningForm = () => {
 
   const submitButton = (e) => {
     setIsClicked(true);
+    if (!predefinedLanguages.find((lang) => lang.value === form.source.value)) {
+      predefinedLanguages.push(form.source);
+    }
     e.preventDefault();
     createVonageApiTokens()
       .then((tokens) => {
         navigate('/webinar', {
           state: {
-            form: { ...form, gender: selectedGender },
+            form: { ...form, gender: selectedGender, target: predefinedLanguages },
             apiToken: tokens,
           },
         });
@@ -47,8 +50,8 @@ export const WebinarJoiningForm = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleRoleChange = (selectedOption, field) => {
-    setForm({ ...form, [field]: selectedOption.value });
+  const handleSourceChange = (selectedOption) => {
+    setForm({ ...form, source: selectedOption });
   };
 
   const handleGenderChange = (event) => {
@@ -86,7 +89,7 @@ export const WebinarJoiningForm = () => {
                     borderRadius: '0.5rem',
                   }),
                 }}
-                onChange={(selectedOption) => handleRoleChange(selectedOption, 'source')}
+                onChange={(selectedOption) => handleSourceChange(selectedOption)}
               />
               <div className="flex flex-col flex-col-2 justify-content items-center">
                 <p className="text-black mb-2">Select your Voice Preference</p>

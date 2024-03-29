@@ -38,11 +38,11 @@ export const VideoComponent = () => {
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
   const JoiningLink = opentokApiToken
-    ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}`
+    ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}&sourceLanguage=${state.source.value}`
     : null;
 
   useEffect(() => {
-    CreateTranslationResource(predefinedTargetLanguge, state.source, state.gender)
+    CreateTranslationResource(predefinedTargetLanguge, state.source.value, state.gender)
       .then((id) => setResourceId(id))
       .catch((error) => console.error('Error creating translation resource:', error));
   }, []);
