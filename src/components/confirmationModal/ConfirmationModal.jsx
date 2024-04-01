@@ -42,7 +42,7 @@ const style = {
 };
 
 // eslint-disable-next-line react/prop-types
-export const ConfirmationModal = ({ openModal, setOpenModal, onTogglePublisherDestroy }) => {
+export const ConfirmationModal = ({ openModal, setOpenModal, onTogglePublisherDestroy, text }) => {
   const hanldeOnClick = () => {
     onTogglePublisherDestroy(false);
     setOpenModal(false);
@@ -53,7 +53,7 @@ export const ConfirmationModal = ({ openModal, setOpenModal, onTogglePublisherDe
       <Modal.Body>
         <div className="text-center flex flex-col gap-4">
           <h1 className="text-center text-[#111827] font-noto-sans text-sm font-medium leading-5">
-            Are you sure you want to end webinar?
+            Are you sure you want to {text} webinar?
           </h1>
           <div className="flex justify-center gap-4">
             <Button
