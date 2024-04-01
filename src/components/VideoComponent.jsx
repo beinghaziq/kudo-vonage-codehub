@@ -1,19 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
-import MicIcon from '@mui/icons-material/Mic.js';
-import MicOffIcon from '@mui/icons-material/MicOff.js';
-import VideocamIcon from '@mui/icons-material/Videocam.js';
-import VideocamOffIcon from '@mui/icons-material/VideocamOff.js';
-import { Tooltip, Button } from '@mui/material';
 import OT from '@opentok/client';
-import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
-import logo from '../assets/Group.png';
-import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnection.jsx';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
 import { useVonagePublisher } from '../Hooks/useVonagePublisher';
-import './VideoChatComponent.scss';
+import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnection.jsx';
+import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
+import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
+import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
+import { ToastContainer, toast } from 'react-toastify';
+import logo from '../assets/black-logo.png';
+import webinar from '../assets/webinar.svg';
+import publisher from '../assets/publish.svg';
+import copyLink from '../assets/copyLink.svg';
+import mic from '../assets/Mic.svg';
+import video from '../assets/Video.svg';
+import videoCameraOff from '../assets/VideoCameraOff.svg';
+import micOff from '../assets/Micoff.svg';
+import invite from '../assets/invite.svg';
+import close from '../assets/X.svg';
+
+import Avatar from 'react-avatar';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const VideoComponent = () => {
@@ -24,6 +30,8 @@ export const VideoComponent = () => {
   const [isInterviewStarted, setIsInterviewStarted] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
@@ -70,6 +78,7 @@ export const VideoComponent = () => {
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(JoiningLink);
+    setIsButtonClicked(false);
     toast.success('Copied to Clipboard');
   };
 
@@ -99,99 +108,151 @@ export const VideoComponent = () => {
     }
     setIsInterviewStarted(action);
     togglePublisherDestroy();
+    setOpenModal(false);
   };
 
   const renderToolbar = () => {
     return (
       <>
-        {isInterviewStarted && (
-          <div className="video-toolbar">
-            {isSessionConnected ? (
-              <div className="video-tools">
-                {isAudioEnabled ? (
-                  <Tooltip title="mic on">
-                    <MicIcon onClick={() => onToggleAudio(false)} className="on-icon" />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="mic off">
-                    <MicOffIcon onClick={() => onToggleAudio(true)} className="off-icon" />
-                  </Tooltip>
-                )}
-                {isVideoEnabled ? (
-                  <Tooltip title="camera on">
-                    <VideocamIcon onClick={() => onToggleVideo(false)} className="on-icon" />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="camera off">
-                    <VideocamOffIcon onClick={() => onToggleVideo(true)} className="off-icon" />
-                  </Tooltip>
-                )}
-              </div>
-            ) : null}
+        {isSessionConnected && isInterviewStarted ? (
+          <div className="h-full flex items-center justify-center ml-24 basis-2/12">
+            {isAudioEnabled ? (
+              <button onClick={() => onToggleAudio(false)}>
+                <img src={mic} alt="mic on" />
+                <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">Mic</p>
+              </button>
+            ) : (
+              <button onClick={() => onToggleAudio(true)}>
+                <img src={micOff} alt="mic off" />
+                <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">Mic</p>
+              </button>
+            )}
+            {isVideoEnabled ? (
+              <button className="flex flex-col justify-center items-center ml-4" onClick={() => onToggleVideo(false)}>
+                <img src={video} alt="video" />
+                <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">Camera</p>
+              </button>
+            ) : (
+              <button className="flex flex-col justify-center items-center ml-4" onClick={() => onToggleVideo(true)}>
+                <img src={videoCameraOff} alt="video" />
+                <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">Camera</p>
+              </button>
+            )}
           </div>
-        )}
+        ) : null}
       </>
     );
   };
 
   return (
-    <div>
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1>Vonage video Api</h1>
-        </div>
+    <div className="p-2">
+      <div className="flex items-center justify-end mr-4">
+        <img src={logo} className="w-[6rem] h-[1.875rem]" alt="logo" />
       </div>
-      <h4 className="AppHeading">Multilingual Webinar powered by KUDO AI</h4>
-      <div className="actions-btns">
-        {isInterviewStarted && isSessionConnected ? (
-          <Button onClick={handleStartPublishing} color="primary" variant="contained" disabled={isStreamSubscribed}>
-            Start Publishing
-          </Button>
-        ) : null}
-        {opentokApiToken ? (
-          <>
-            <Button onClick={handleStartWebinar} disabled={isInterviewStarted} color="primary" variant="contained">
-              Start Webinar
-            </Button>
-            <Button
-              onClick={() => onTogglePublisherDestroy(false)}
-              disabled={!isInterviewStarted}
-              color="secondary"
-              variant="contained"
-            >
-              End Webinar
-            </Button>
-          </>
-        ) : null}
-      </div>
-      {opentokApiToken && isInterviewStarted && isSessionConnected ? (
-        <>
-          <div className="joinLink">
-            <p>Users can join the webinar using this link: </p>
-            <button className="copyButton" onClick={handleCopyLink}>
-              Copy Joining Link
-            </button>
-            <ToastContainer />
+      <div className="h-screen pb-24 px-16">
+        <h4 className="text-[#075985] font-roboto font-bold text-xl ml-24 mb-1 leading-[1.25rem]">
+          Hi {state.name}, Welcome to KUDO’s Webinar
+        </h4>
+        <div className="h-full p-6 flex flex-row">
+          <div className="h-full w-3/4 bg-[#F5F5F5] rounded-tl-[6rem] p-4 rounded-bl-[6rem]">
+            <div className="h-full flex flex-col mt-6">
+              <div className="h-full flex flex-row basis-10/12">
+                <div className="h-full flex flex-col gap-6 mt-3">
+                  {opentokApiToken ? (
+                    <>
+                      <button
+                        className="flex flex-col items-center p-2 disabled:opacity-60"
+                        onClick={handleStartWebinar}
+                        disabled={isInterviewStarted}
+                      >
+                        <img src={webinar} alt="logo" />
+                        <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
+                          Start Webinar
+                        </p>
+                      </button>
+                    </>
+                  ) : null}
+                  <button
+                    className="flex flex-col items-center p-2 disabled:opacity-60"
+                    onClick={handleStartPublishing}
+                    disabled={!(isInterviewStarted && isSessionConnected) || isStreamSubscribed}
+                  >
+                    <img src={publisher} alt="logo" />
+                    <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
+                      Start Publishing
+                    </p>
+                  </button>
+                  <button
+                    className="flex flex-col items-center p-2 disabled:opacity-60"
+                    disabled={!(opentokApiToken && isInterviewStarted && isSessionConnected)}
+                    onClick={() => setIsButtonClicked(true)}
+                  >
+                    <img src={invite} alt="logo" />
+                    <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
+                      Invite Users
+                    </p>
+                  </button>
+                  {isButtonClicked ? (
+                    <>
+                      <div className="w-[19.1875rem] h-[2.4375rem] rounded-[1.5625rem] border-1 border-[#747474] bg-[#C8E2F3] gap-3 flex items-center justify-end absolute top-[23rem] z-10">
+                        <p className="text-[#747474] text-center font-noto-sans text-xs font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[190px]">
+                          {JoiningLink}
+                        </p>
+                        <div className="h-full border-r border-[#AAA9A9] w-[0.0625rem] h-[1.5rem]"></div>
+                        <button onClick={handleCopyLink}>
+                          <img src={copyLink} alt="copyLink" />
+                        </button>
+                        <button onClick={() => setIsButtonClicked(false)}>
+                          <img src={close} alt="close" />
+                        </button>
+                        <ToastContainer />
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+                <div className="h-10/12 w-10/12 ml-6 mt-6 bg-[#CCCCCC] flex items-center justify-center">
+                  {!isStreamSubscribed ? (
+                    <div id="profile" className="">
+                      <Avatar name={state.name} round={true} />
+                    </div>
+                  ) : (
+                    <div id="publisher" className="[&>:not(:first-child)]:hidden h-full w-full" />
+                  )}
+                </div>
+              </div>
+              {isStreamSubscribed ? renderToolbar() : null}
+            </div>
           </div>
-        </>
-      ) : null}
+          <div className="h-full w-1/4 bg-[#F5F5F5] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
+            <div className="h-full flex flex-row"></div>
+          </div>
+        </div>
+        <div className="flex items-center justify-end">
+          <button
+            className={`flex w-[9.25rem] p-[0.5375rem] justify-center items-center gap-[0.625rem] rounded-[0.9375rem] ${openModal ? 'bg-[#075985] text-white' : 'bg-[#CCCCCC]'}`}
+            onClick={() => setOpenModal(true)}
+            disabled={!isInterviewStarted}
+          >
+            End Webinar
+          </button>
+          <ConfirmationModal
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            onTogglePublisherDestroy={onTogglePublisherDestroy}
+          />
+        </div>
 
-      <div className="video-container">
-        <div id="publisher" className="main-video"></div>
-        {isStreamSubscribed ? <div className="video-tool-bar">{renderToolbar()}</div> : null}
+        {chunk && resourceId && isStreamSubscribed ? (
+          <WebsocketConnection
+            dataBlobUrl={chunk}
+            translatedBuffer={translatedBuffer}
+            setTranslatedBuffer={setTranslatedBuffer}
+            isInterviewStarted={isInterviewStarted}
+            resourceId={resourceId}
+            publishTranslatedAudio={publishTranslatedAudio}
+          />
+        ) : null}
       </div>
-
-      {chunk && resourceId && isStreamSubscribed ? (
-        <WebsocketConnection
-          dataBlobUrl={chunk}
-          translatedBuffer={translatedBuffer}
-          setTranslatedBuffer={setTranslatedBuffer}
-          isInterviewStarted={isInterviewStarted}
-          resourceId={resourceId}
-          publishTranslatedAudio={publishTranslatedAudio}
-        />
-      ) : null}
     </div>
   );
 };

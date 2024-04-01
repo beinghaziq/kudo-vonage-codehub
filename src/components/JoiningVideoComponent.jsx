@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import logo from '../assets/Group.png';
+import logo from '../assets/black-logo.png';
 import { LanguageSelector } from '../LanguageSelector/LanguageSelector.js';
 import { useLocation } from 'react-router-dom';
 import createSubscriberToken from '../ExternalApiIntegration/createSubscriberToken.js';
