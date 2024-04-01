@@ -10,7 +10,6 @@ export const WebsocketConnection = ({
   authToken,
 }) => {
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
-  const API_TOKEN = AUTH_TOKEN;
   const [isPlaying, setIsPlaying] = useState(false);
   const [playingQueue, setPlayingQueue] = useState([]);
   // converting the data to valid binary format
