@@ -31,6 +31,14 @@ const style = {
       'bottom-left': 'items-end justify-start',
     },
   },
+  content: {
+    base: 'relative h-full w-full p-4 md:h-auto',
+    inner: 'relative flex max-h-[90dvh] flex-col rounded-lg bg-white shadow dark:bg-gray-700',
+  },
+  body: {
+    base: 'flex-1 overflow-auto p-6',
+    popup: 'pt-0',
+  },
 };
 
 // eslint-disable-next-line react/prop-types

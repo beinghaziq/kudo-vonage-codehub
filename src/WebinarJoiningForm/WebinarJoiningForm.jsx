@@ -97,7 +97,7 @@ export const WebinarJoiningForm = () => {
                 />
                 <div className="flex flex-col flex-col-2 justify-content items-center">
                   <p className="text-black mb-2">Select your Voice Preference</p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 justify-content items-center">
                     <input
                       style={{ accentColor: '#065985' }}
                       type="radio"
