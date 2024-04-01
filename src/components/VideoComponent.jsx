@@ -46,7 +46,7 @@ export const VideoComponent = () => {
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
   const JoiningLink = opentokApiToken
-    ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}&sourceLanguage=${state.source.value}`
+    ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}&sourceLanguage=${state.source.value}&name=${state.name}`
     : null;
 
   useEffect(() => {
@@ -239,6 +239,7 @@ export const VideoComponent = () => {
             openModal={openModal}
             setOpenModal={setOpenModal}
             onTogglePublisherDestroy={onTogglePublisherDestroy}
+            text={'end'}
           />
         </div>
 
