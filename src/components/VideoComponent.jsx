@@ -55,7 +55,6 @@ export const VideoComponent = () => {
     FetchApiToken()
       .then((apiToken) => {
         setAuthToken(apiToken);
-        console.log('setAuthToken', apiToken);
         CreateTranslationResource(predefinedTargetLanguge, state.source.value, state.gender, apiToken)
           .then((id) => setResourceId(id))
           .catch((error) => console.error('Error creating translation resource:', error));

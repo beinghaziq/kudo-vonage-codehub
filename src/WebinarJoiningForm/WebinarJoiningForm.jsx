@@ -3,12 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
+import { Label, Radio } from 'flowbite-react';
+
 import { sourceLanguages } from '../constants/sourceLanguages.js';
 import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import { TERMS_CONDITIONS_LINK, COOKIE_POLICY_LINK, PRIVACY_POLICY_LINK } from '../constants/ExternalLinks.js';
 import logo from '../assets/kudo.png';
 import { createVonageApiTokens } from '../ExternalApiIntegration/createVonageApiTokens.js';
-
 export const WebinarJoiningForm = () => {
   const navigate = useNavigate();
   const [selectedGender, setSelectedGender] = useState('female');
@@ -96,26 +97,24 @@ export const WebinarJoiningForm = () => {
                 <div className="flex flex-col flex-col-2 justify-content items-center">
                   <p className="text-black mb-2">Select your Voice Preference</p>
                   <div className="flex gap-2 justify-content items-center">
-                    <input
-                      style={{ accentColor: '#065985' }}
-                      type="radio"
+                    <Radio
+                      className="focus:ring-[#075985] text-[#075985]"
                       id="female"
                       label="Female"
                       value="female"
                       checked={selectedGender === 'female'}
                       onChange={handleGenderChange}
                     />
-                    <label htmlFor="html">Female</label>
-                    <input
-                      style={{ accentColor: '#065985' }}
-                      type="radio"
+                    <Label htmlFor="html">Female</Label>
+                    <Radio
+                      className="focus:ring-[#075985] text-[#075985]"
                       id="male"
                       label="Male"
                       value="male"
                       checked={selectedGender === 'male'}
                       onChange={handleGenderChange}
                     />
-                    <label htmlFor="html">Male</label>
+                    <Label htmlFor="html">Male</Label>
                   </div>
                 </div>
                 <button
