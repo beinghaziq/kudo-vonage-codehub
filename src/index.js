@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App.jsx';
 import './styles.css';
 import './index.css';
+import 'flowbite';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
