@@ -7,6 +7,7 @@ import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnecti
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
 import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
 import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
+import FetchApiToken from '../ExternalApiIntegration/fetchApiToken.js';
 import { ToastContainer, toast } from 'react-toastify';
 import logo from '../assets/black-logo.png';
 import webinar from '../assets/webinar.svg';
@@ -34,6 +35,7 @@ export const VideoComponent = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
+  const [authToken, setAuthToken] = useState(null);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
@@ -50,9 +52,15 @@ export const VideoComponent = () => {
     : null;
 
   useEffect(() => {
-    CreateTranslationResource(predefinedTargetLanguge, state.source.value, state.gender)
-      .then((id) => setResourceId(id))
-      .catch((error) => console.error('Error creating translation resource:', error));
+    FetchApiToken()
+      .then((apiToken) => {
+        setAuthToken(apiToken);
+        console.log('setAuthToken', apiToken);
+        CreateTranslationResource(predefinedTargetLanguge, state.source.value, state.gender, apiToken)
+          .then((id) => setResourceId(id))
+          .catch((error) => console.error('Error creating translation resource:', error));
+      })
+      .catch((error) => console.error('Error creating auth token:', error));
   }, []);
 
   useEffect(() => {
@@ -251,6 +259,7 @@ export const VideoComponent = () => {
             isInterviewStarted={isInterviewStarted}
             resourceId={resourceId}
             publishTranslatedAudio={publishTranslatedAudio}
+            authToken={authToken}
           />
         ) : null}
       </div>

@@ -1,9 +1,14 @@
 // Ensure you have installed the following React packages: react-use-websocket and file-saver
 import useWebSocket from 'react-use-websocket';
 import { useCallback, useEffect, useState } from 'react';
-import { AUTH_TOKEN } from '../config.js';
 
-export const WebsocketConnection = ({ dataBlobUrl, resourceId, isInterviewStarted, publishTranslatedAudio }) => {
+export const WebsocketConnection = ({
+  dataBlobUrl,
+  resourceId,
+  isInterviewStarted,
+  publishTranslatedAudio,
+  authToken,
+}) => {
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
   const API_TOKEN = AUTH_TOKEN;
   const [isPlaying, setIsPlaying] = useState(false);
@@ -51,7 +56,7 @@ export const WebsocketConnection = ({ dataBlobUrl, resourceId, isInterviewStarte
     },
     onError: (e) => console.error('Error in websocket', e),
     shouldReconnect: () => false,
-    protocols: ['Authorization', API_TOKEN],
+    protocols: ['Authorization', authToken],
   });
 
   // converting audio blob to float32array and send to websocket

@@ -58,8 +58,6 @@ export const WebinarJoiningForm = () => {
     setSelectedGender(event.target.value);
   };
 
-  console.log({ bgColor });
-
   return (
     <div className="h-screen p-16">
       <div className="h-full p-8 rounded-3xl bg-[#F5F5F5]">
