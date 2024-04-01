@@ -17,6 +17,7 @@ import video from '../assets/Video.svg';
 import videoCameraOff from '../assets/VideoCameraOff.svg';
 import micOff from '../assets/Micoff.svg';
 import invite from '../assets/invite.svg';
+import close from '../assets/X.svg';
 
 import Avatar from 'react-avatar';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,6 +31,7 @@ export const VideoComponent = () => {
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
+  const [openModal, setOpenModal] = useState(true);
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
@@ -106,6 +108,7 @@ export const VideoComponent = () => {
     }
     setIsInterviewStarted(action);
     togglePublisherDestroy();
+    setOpenModal(false);
   };
 
   const renderToolbar = () => {
@@ -181,7 +184,7 @@ export const VideoComponent = () => {
                       </p>
                     </button>
                   ) : null}
-                  {(opentokApiToken && isInterviewStarted && isSessionConnected) || true ? (
+                  {opentokApiToken && isInterviewStarted && isSessionConnected ? (
                     <button className="flex flex-col items-center p-2" onClick={() => setIsButtonClicked(true)}>
                       <img src={invite} alt="logo" />
                       <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
@@ -191,13 +194,16 @@ export const VideoComponent = () => {
                   ) : null}
                   {isButtonClicked ? (
                     <>
-                      <div className="w-[19.1875rem] h-[2.4375rem] rounded-[1.5625rem] border-1 border-[#747474] bg-[#C8E2F3] gap-4 flex items-center justify-center absolute top-[23rem]">
-                        <p className="text-[#747474] text-center font-noto-sans text-xs font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[200px]">
+                      <div className="w-[19.1875rem] h-[2.4375rem] rounded-[1.5625rem] border-1 border-[#747474] bg-[#C8E2F3] gap-3 flex items-center justify-end absolute top-[23rem] z-10">
+                        <p className="text-[#747474] text-center font-noto-sans text-xs font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[190px]">
                           {JoiningLink}
                         </p>
                         <div className="h-full border-r border-[#AAA9A9] w-[0.0625rem] h-[1.5rem]"></div>
                         <button onClick={handleCopyLink}>
                           <img src={copyLink} alt="copyLink" />
+                        </button>
+                        <button onClick={() => setIsButtonClicked(false)}>
+                          <img src={close} alt="close" />
                         </button>
                         <ToastContainer />
                       </div>
@@ -224,12 +230,11 @@ export const VideoComponent = () => {
         <div className="flex items-center justify-end">
           <button
             className="flex w-[9.25rem] p-[0.5375rem] justify-center items-center gap-[0.625rem] rounded-[0.9375rem] bg-[#CCCCCC]"
-            onClick={() => onTogglePublisherDestroy(false)}
+            onClick={() => setOpenModal(true)}
             disabled={!isInterviewStarted}
           >
             End Webinar
           </button>
-          <ConfirmationModal />
         </div>
 
         {chunk && resourceId && isStreamSubscribed ? (
@@ -243,6 +248,11 @@ export const VideoComponent = () => {
           />
         ) : null}
       </div>
+      <ConfirmationModal
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        onTogglePublisherDestroy={onTogglePublisherDestroy}
+      />
     </div>
   );
 };

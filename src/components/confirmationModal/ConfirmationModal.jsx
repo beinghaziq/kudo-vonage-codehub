@@ -9,9 +9,9 @@ export const ConfirmationModal = ({ openModal, setOpenModal, onTogglePublisherDe
   };
   return (
     <Modal
-      className="flex p-1 w-[24rem] items-center justify-center rounded-[1.25rem]"
+      className="p-1 w-[24rem] rounded-[1.25rem]"
       show={openModal}
-      position="bottom-left"
+      position="center"
       onClose={() => setOpenModal(false)}
       popup
     >
