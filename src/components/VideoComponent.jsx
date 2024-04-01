@@ -31,7 +31,7 @@ export const VideoComponent = () => {
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
-  const [openModal, setOpenModal] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
@@ -115,7 +115,7 @@ export const VideoComponent = () => {
     return (
       <>
         {isSessionConnected && isInterviewStarted ? (
-          <div className="h-full flex items-center justify-center ml-6 basis-2/12">
+          <div className="h-full flex items-center justify-center ml-24 basis-2/12">
             {isAudioEnabled ? (
               <button onClick={() => onToggleAudio(false)}>
                 <img src={mic} alt="mic on" />
@@ -161,7 +161,7 @@ export const VideoComponent = () => {
                   {opentokApiToken ? (
                     <>
                       <button
-                        className="flex flex-col items-center p-2"
+                        className="flex flex-col items-center p-2 disabled:opacity-60"
                         onClick={handleStartWebinar}
                         disabled={isInterviewStarted}
                       >
@@ -172,26 +172,26 @@ export const VideoComponent = () => {
                       </button>
                     </>
                   ) : null}
-                  {isInterviewStarted && isSessionConnected ? (
-                    <button
-                      className="flex flex-col items-center p-2"
-                      onClick={handleStartPublishing}
-                      disabled={isStreamSubscribed}
-                    >
-                      <img src={publisher} alt="logo" />
-                      <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
-                        Start Publishing
-                      </p>
-                    </button>
-                  ) : null}
-                  {opentokApiToken && isInterviewStarted && isSessionConnected ? (
-                    <button className="flex flex-col items-center p-2" onClick={() => setIsButtonClicked(true)}>
-                      <img src={invite} alt="logo" />
-                      <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
-                        Invite Users
-                      </p>
-                    </button>
-                  ) : null}
+                  <button
+                    className="flex flex-col items-center p-2 disabled:opacity-60"
+                    onClick={handleStartPublishing}
+                    disabled={!(isInterviewStarted && isSessionConnected) || isStreamSubscribed}
+                  >
+                    <img src={publisher} alt="logo" />
+                    <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
+                      Start Publishing
+                    </p>
+                  </button>
+                  <button
+                    className="flex flex-col items-center p-2 disabled:opacity-60"
+                    disabled={!(opentokApiToken && isInterviewStarted && isSessionConnected)}
+                    onClick={() => setIsButtonClicked(true)}
+                  >
+                    <img src={invite} alt="logo" />
+                    <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
+                      Invite Users
+                    </p>
+                  </button>
                   {isButtonClicked ? (
                     <>
                       <div className="w-[19.1875rem] h-[2.4375rem] rounded-[1.5625rem] border-1 border-[#747474] bg-[#C8E2F3] gap-3 flex items-center justify-end absolute top-[23rem] z-10">
@@ -220,7 +220,7 @@ export const VideoComponent = () => {
                   )}
                 </div>
               </div>
-              {isStreamSubscribed || true ? renderToolbar() : null}
+              {isStreamSubscribed ? renderToolbar() : null}
             </div>
           </div>
           <div className="h-full w-1/4 bg-[#F5F5F5] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
@@ -235,6 +235,11 @@ export const VideoComponent = () => {
           >
             End Webinar
           </button>
+          <ConfirmationModal
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            onTogglePublisherDestroy={onTogglePublisherDestroy}
+          />
         </div>
 
         {chunk && resourceId && isStreamSubscribed ? (
@@ -248,11 +253,6 @@ export const VideoComponent = () => {
           />
         ) : null}
       </div>
-      <ConfirmationModal
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-        onTogglePublisherDestroy={onTogglePublisherDestroy}
-      />
     </div>
   );
 };
