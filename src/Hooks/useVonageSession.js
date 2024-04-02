@@ -15,7 +15,9 @@ export const useVonageSession = (subscriberId, token, setIsSessionConnected, sel
       // Connect to the session
       session.connect(token, function (error) {
         // If the connection is successful, publish to the session
-        setIsSessionConnected(true);
+        if (setIsSessionConnected) {
+          setIsSessionConnected(true);
+        }
         if (error) {
           handleError(error);
         } else {

@@ -73,7 +73,7 @@ export const WebinarJoiningForm = () => {
               <h1 className="text-TextBlue text-center font-roboto font-bold text-3xl">Welcome!</h1>
               <div className="flex flex-col gap-8">
                 <input
-                  className="w-80 h-11 rounded-lg border-1 border-[#747474] bg-[#F5F5F5] p-[0.35rem] pl-2"
+                  className="w-80 h-11 rounded-lg border-2 focus:border-[#075985] hover:border-[#075985] border-[#747474] bg-[#F5F5F5] p-[0.35rem] pl-2"
                   type="text"
                   placeholder="Your Name"
                   name="name"
@@ -90,6 +90,11 @@ export const WebinarJoiningForm = () => {
                       backgroundColor: '#F5F5F5',
                       borderRadius: '0.5rem',
                       height: '44px',
+                      boxShadow: 'none',
+                      ':hover': {
+                        border: '2px solid #075985',
+                        boxShadow: 'none',
+                      },
                     }),
                   }}
                   onChange={(selectedOption) => handleSourceChange(selectedOption)}

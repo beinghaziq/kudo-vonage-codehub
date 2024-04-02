@@ -9,6 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+input[type='text']:focus { box-shadow: none; }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',

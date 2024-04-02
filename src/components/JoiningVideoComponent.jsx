@@ -9,7 +9,8 @@ import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
 import Avatar from 'react-avatar';
 import webinar from '../assets/webinar.svg';
 import logo from '../assets/black-logo.png';
-import './VideoChatComponent.scss';
+import polygon from '../assets/Polygon.svg';
+import close from '../assets/X.svg';
 
 export const JoiningVideoComponent = () => {
   const location = useLocation();
@@ -23,12 +24,12 @@ export const JoiningVideoComponent = () => {
   const sourceLanguage = sourceLanguages.find((language) => language.code === sourceCode);
   const languageExists = predefinedLanguages.find((lang) => lang.value === sourceCode);
   const [SelectedLanguage, setSelectedLanguage] = useState(sourceLanguage);
-  const [chunk, setChunk] = useState(null);
+  const [languageTooltip, setLanguageTooltip] = useState(true);
   const languageRef = useRef(false);
   const { toggleSession, reSubscribeStreams } = useVonageSession(
     sessionId,
     subscriberToken,
-    setChunk,
+    null,
     SelectedLanguage.code
   );
 
@@ -70,9 +71,40 @@ export const JoiningVideoComponent = () => {
         <img src={logo} className="w-[6rem] h-[1.875rem]" alt="logo" />
       </div>
       <div className="h-screen pb-24 px-16">
-        <h4 className="text-[#075985] font-roboto font-bold text-xl ml-24 mb-1 leading-[1.25rem]">
-          Hi {hostName}, Welcome to KUDO’s Webinar
-        </h4>
+        <div className="flex items-center justify-start gap-4">
+          <h4 className="text-[#075985] font-roboto font-bold text-xl ml-24 leading-[1.25rem]">
+            Hi {hostName}, Welcome to KUDO’s Webinar
+          </h4>
+          <div>
+            <LanguageSelector
+              setSelectedLanguage={setSelectedLanguage}
+              predefinedLanguages={predefinedLanguages}
+              setLanguageTooltip={setLanguageTooltip}
+            />
+            {languageTooltip ? (
+              <div className="absolute z-10">
+                <img src={polygon} className="h-[0.875rem] ml-4" alt="close" />
+                <div className="flex flex-col w-[19.625rem] h-[4rem] rounded-[0.9375rem] bg-[#075985]">
+                  <button
+                    onClick={() => setLanguageTooltip(false)}
+                    className="flex justify-end items-end pt-1 pr-2 hover:cursor-pointer"
+                  >
+                    <img src={close} className="h-[0.875rem]" alt="close" />
+                  </button>
+                  <p className="text-gray-100 text-center font-noto-sans text-base font-medium leading-5">
+                    Please select your <span className="text-white font-bold">listening</span> language
+                  </p>
+                  <button onClick={() => setLanguageTooltip(false)} className="flex justify-end items-end pb-1 pr-5">
+                    <p className="text-yellow-300 text-right font-noto-sans text-[0.8rem] font-medium leading-5 underline hover:cursor-pointer">
+                      Got it
+                    </p>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
         <div className="h-full p-6 flex flex-row">
           <div className="h-full w-3/4 bg-[#F5F5F5] rounded-tl-[6rem] p-4 rounded-bl-[6rem]">
             <div className="h-full flex flex-col mt-6">
