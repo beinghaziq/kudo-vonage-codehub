@@ -86,7 +86,7 @@ export const WebinarJoiningForm = () => {
                   styles={{
                     control: (baseStyles) => ({
                       ...baseStyles,
-                      borderColor: '#747474',
+                      border: '2px solid #747474',
                       backgroundColor: '#F5F5F5',
                       borderRadius: '0.5rem',
                       height: '44px',

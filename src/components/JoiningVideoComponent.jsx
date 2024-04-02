@@ -41,7 +41,7 @@ export const JoiningVideoComponent = () => {
 
   useEffect(() => {
     if (languageRef.current) {
-      reSubscribeStreams();
+      reSubscribeStreams(SelectedLanguage.value);
     } else {
       languageRef.current = true;
     }
@@ -75,7 +75,7 @@ export const JoiningVideoComponent = () => {
           <h4 className="text-[#075985] font-roboto font-bold text-xl ml-24 leading-[1.25rem]">
             Hi {hostName}, Welcome to KUDO’s Webinar
           </h4>
-          <div>
+          <div className="z-10">
             <LanguageSelector
               setSelectedLanguage={setSelectedLanguage}
               predefinedLanguages={predefinedLanguages}

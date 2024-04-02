@@ -23,6 +23,8 @@ export const useVonageSession = (subscriberId, token, setIsSessionConnected, sel
         } else {
         }
       });
+      console.log({ selectedTargetLanguage });
+
       session.off('signal:caption');
       session.on('signal:caption', (event) => captionSignalEvent(event, selectedTargetLanguage));
       session.on('streamCreated', (event) =>
@@ -40,16 +42,15 @@ export const useVonageSession = (subscriberId, token, setIsSessionConnected, sel
     }
   };
 
-  const reSubscribeStreams = () => {
-    console.log({ subscriber, streams });
+  const reSubscribeStreams = (selectedLanguage) => {
     if (subscriber) {
       session.unsubscribe(subscriber);
     }
     console.log('Session unsubscribed');
 
     for (let i = 0; i < streams.length; i++) {
-      if (streams[i].name === selectedTargetLanguage) {
-        console.log('Session resubscribed with language', streams[i].name);
+      if (streams[i].name === selectedLanguage) {
+        console.log('Session resubscribed with language', selectedLanguage);
         setSubscriber(
           session.subscribe(
             streams[i],
