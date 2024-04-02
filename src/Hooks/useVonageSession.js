@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
 import OT from '@opentok/client';
 import { handleError } from '../Helpers/HandleError.js';
+import { addCaptionsForSubscriber } from '../VonageIntegration/AddCaptionsForSubscriber.js';
 import { captionSignalEvent, streamCreatedEvent } from '../Helpers/SessionEventCallbacks.js';
 
 import { API_KEY } from '../config.js';
 
-export const useVonageSession = (subscriberId, token, setIsSessionConnected, selectedTargetLanguage = 'ENG') => {
+export const useVonageSession = (
+  subscriberId,
+  token,
+  setIsSessionConnected,
+  selectedTargetLanguage = 'ENG',
+  hostName
+) => {
   const [session, setSession] = useState();
   const [subscriber, setSubscriber] = useState();
   const [streams, setStreams] = useState([]);
@@ -26,7 +33,9 @@ export const useVonageSession = (subscriberId, token, setIsSessionConnected, sel
       console.log({ selectedTargetLanguage });
 
       session.off('signal:caption');
-      session.on('signal:caption', (event) => captionSignalEvent(event, selectedTargetLanguage));
+      if (hostName) {
+        session.on('signal:caption', (event) => captionSignalEvent(event, selectedTargetLanguage, hostName));
+      }
       session.on('streamCreated', (event) =>
         streamCreatedEvent(event, setStreams, selectedTargetLanguage, setSubscriber, session)
       );

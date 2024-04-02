@@ -43,7 +43,7 @@ export const VideoComponent = () => {
     setIsSessionConnected
   );
   const { createPublisher, publishTranslatedAudio, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming } =
-    useVonagePublisher(session);
+    useVonagePublisher(session, state.name);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
@@ -231,7 +231,7 @@ export const VideoComponent = () => {
             </div>
           </div>
           <div className="h-full w-1/4 bg-[#F5F5F5] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
-            <div className="h-full flex flex-row"></div>
+            <div id="subscriberContainer" className="h-full flex flex-col p-4 justify-start gap-10"></div>
           </div>
         </div>
         <div className="flex items-center justify-end">
