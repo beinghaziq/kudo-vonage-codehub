@@ -1,16 +1,36 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import './LanguageSelector.scss';
-import Select, { components } from 'react-select';
+import Select from 'react-select';
 import Headphones from '../assets/Headphone.svg';
+import Caption from '../assets/Captions.svg';
 
-// eslint-disable-next-line react/prop-types
-export const LanguageSelector = ({ setSelectedLanguage, predefinedLanguages, setLanguageTooltip }) => {
+export const LanguageSelector = ({
+  setCaptionLanguage,
+  predefinedLanguages,
+  isCaption,
+  setLanguageTooltip,
+  setSelectedLanguage,
+}) => {
   const handleChange = (selectedOption) => {
-    setSelectedLanguage(selectedOption);
+    isCaption ? setCaptionLanguage(selectedOption) : setSelectedLanguage(selectedOption);
+  };
+  const handleFocus = () => {
+    !isCaption ? setLanguageTooltip(false) : null;
   };
   const CustomPlaceholder = () => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-      <img className="w-4 h-4" src={Headphones} style={{ width: 36 }} alt="headphone" /> <span>Listening language</span>
+      {isCaption ? (
+        <>
+          <img className="w-4 h-4" src={Caption} style={{ width: 36 }} alt="Caption" />
+          <span>Captions language</span>
+        </>
+      ) : (
+        <>
+          <img className="w-4 h-4" src={Headphones} style={{ width: 36 }} alt="headphone" />
+          <span>Listening language</span>
+        </>
+      )}
     </div>
   );
   return (
@@ -18,7 +38,7 @@ export const LanguageSelector = ({ setSelectedLanguage, predefinedLanguages, set
       placeholder={<CustomPlaceholder />}
       options={predefinedLanguages}
       onChange={handleChange}
-      onFocus={() => setLanguageTooltip(false)}
+      onFocus={handleFocus}
       styles={{
         control: (baseStyles) => ({
           ...baseStyles,

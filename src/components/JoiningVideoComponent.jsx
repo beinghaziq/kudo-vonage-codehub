@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LanguageSelector } from '../LanguageSelector/LanguageSelector.js';
+import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
 import { useLocation } from 'react-router-dom';
 import createSubscriberToken from '../ExternalApiIntegration/createSubscriberToken.js';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
@@ -24,13 +24,16 @@ export const JoiningVideoComponent = () => {
   const sourceLanguage = sourceLanguages.find((language) => language.code === sourceCode);
   const languageExists = predefinedLanguages.find((lang) => lang.value === sourceCode);
   const [SelectedLanguage, setSelectedLanguage] = useState(sourceLanguage);
+  const [captionLanguage, setCaptionLanguage] = useState({ value: sourceLanguage.code, label: sourceLanguage.name });
   const [languageTooltip, setLanguageTooltip] = useState(true);
   const languageRef = useRef(false);
   const { toggleSession, reSubscribeStreams } = useVonageSession(
     sessionId,
     subscriberToken,
     null,
-    SelectedLanguage.code
+    SelectedLanguage.code,
+    hostName,
+    captionLanguage.value
   );
 
   useEffect(() => {
@@ -77,9 +80,11 @@ export const JoiningVideoComponent = () => {
           </h4>
           <div className="z-10">
             <LanguageSelector
-              setSelectedLanguage={setSelectedLanguage}
+              setCaptionLanguage={setCaptionLanguage}
               predefinedLanguages={predefinedLanguages}
+              isCaption={false}
               setLanguageTooltip={setLanguageTooltip}
+              setSelectedLanguage={setSelectedLanguage}
             />
             {languageTooltip ? (
               <div className="absolute z-10">
@@ -138,6 +143,15 @@ export const JoiningVideoComponent = () => {
             </div>
           </div>
           <div className="h-full w-1/4 bg-[#F5F5F5] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
+            <div className="flex justify-start items-center m-4 z-10">
+              <LanguageSelector
+                setCaptionLanguage={setCaptionLanguage}
+                predefinedLanguages={predefinedLanguages}
+                isCaption={true}
+                setLanguageTooltip={setLanguageTooltip}
+                setSelectedLanguage={setSelectedLanguage}
+              />
+            </div>
             <div id="subscriberContainer" className="h-full flex flex-col p-4 justify-start gap-10"></div>
           </div>
         </div>

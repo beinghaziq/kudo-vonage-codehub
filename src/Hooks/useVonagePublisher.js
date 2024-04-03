@@ -5,7 +5,7 @@ import { handleError } from '../Helpers/HandleError.js';
 import { addCaptionsForSubscriber } from '../VonageIntegration/AddCaptionsForSubscriber.js';
 import { getAudioBuffer, createAudioStream, sendCaption } from '../VonageIntegration/publishData.js';
 
-export const useVonagePublisher = (session, hostName) => {
+export const useVonagePublisher = (session, hostName, captionLanguage) => {
   const [publishers, setPublishers] = useState({});
 
   const targetLanguages = predefinedLanguages.map((language) => language.value);
@@ -72,8 +72,7 @@ export const useVonagePublisher = (session, hostName) => {
         console.log('Publishing the audio....');
         // If publisher1 is already initialized, update the audio source
         sendCaption(session, CaptionText, websocketTargetLanguage);
-        if (websocketTargetLanguage == 'ENG') {
-          console.log('hegfh', websocketTargetLanguage);
+        if (websocketTargetLanguage == captionLanguage) {
           addCaptionsForSubscriber(CaptionText, hostName);
         }
         publishers[websocketTargetLanguage].publishAudio(false); // Stop publishing audio temporarily

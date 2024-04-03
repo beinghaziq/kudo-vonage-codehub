@@ -9,6 +9,8 @@ import CreateTranslationResource from '../ExternalApiIntegration/createTranslati
 import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
 import FetchApiToken from '../ExternalApiIntegration/fetchApiToken.js';
 import { ToastContainer, toast } from 'react-toastify';
+import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
+import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import logo from '../assets/black-logo.png';
 import webinar from '../assets/webinar.svg';
 import publisher from '../assets/publish.svg';
@@ -35,21 +37,29 @@ export const VideoComponent = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
+  const [captionLanguage, setCaptionLanguage] = useState(state.source);
   const [authToken, setAuthToken] = useState(null);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
+  const languageExists = predefinedLanguages.find((lang) => lang.value === state.source.value);
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
     opentokApiToken?.publisher_token,
     setIsSessionConnected
   );
   const { createPublisher, publishTranslatedAudio, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming } =
-    useVonagePublisher(session, state.name);
+    useVonagePublisher(session, state.name, captionLanguage.value);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
   const JoiningLink = opentokApiToken
     ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}&sourceLanguage=${state.source.value}&name=${state.name}`
     : null;
+
+  useEffect(() => {
+    if (!languageExists) {
+      predefinedLanguages.push(state.source);
+    }
+  });
 
   useEffect(() => {
     FetchApiToken()
@@ -231,6 +241,13 @@ export const VideoComponent = () => {
             </div>
           </div>
           <div className="h-full w-1/4 bg-[#F5F5F5] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
+            <div className="flex justify-start items-center m-4 z-10">
+              <LanguageSelector
+                setCaptionLanguage={setCaptionLanguage}
+                predefinedLanguages={predefinedLanguages}
+                isCaption={true}
+              />
+            </div>
             <div id="subscriberContainer" className="h-full flex flex-col p-4 justify-start gap-10"></div>
           </div>
         </div>
