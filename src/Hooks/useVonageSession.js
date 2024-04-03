@@ -5,7 +5,14 @@ import { captionSignalEvent, streamCreatedEvent } from '../Helpers/SessionEventC
 
 import { API_KEY } from '../config.js';
 
-export const useVonageSession = (subscriberId, token, setIsSessionConnected, selectedTargetLanguage = 'ENG') => {
+export const useVonageSession = (
+  subscriberId,
+  token,
+  setIsSessionConnected,
+  selectedTargetLanguage = 'ENG',
+  hostName,
+  captionLanguage
+) => {
   const [session, setSession] = useState();
   const [subscriber, setSubscriber] = useState();
   const [streams, setStreams] = useState([]);
@@ -23,15 +30,16 @@ export const useVonageSession = (subscriberId, token, setIsSessionConnected, sel
         } else {
         }
       });
-      console.log({ selectedTargetLanguage });
 
       session.off('signal:caption');
-      session.on('signal:caption', (event) => captionSignalEvent(event, selectedTargetLanguage));
+      if (hostName) {
+        session.on('signal:caption', (event) => captionSignalEvent(event, captionLanguage, hostName));
+      }
       session.on('streamCreated', (event) =>
         streamCreatedEvent(event, setStreams, selectedTargetLanguage, setSubscriber, session)
       );
     }
-  }, [selectedTargetLanguage, session, setIsSessionConnected, token]);
+  }, [selectedTargetLanguage, session, setIsSessionConnected, token, captionLanguage]);
 
   const toggleSession = () => {
     if (session && session.isConnected()) {
