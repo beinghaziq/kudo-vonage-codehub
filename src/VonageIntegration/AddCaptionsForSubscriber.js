@@ -6,7 +6,7 @@ export function addCaptionsForSubscriber(CaptionText, hostName = 'host') {
   // Create caption container
   const captionContainer = document.createElement('div');
   captionContainer.id = 'captionContainer';
-  captionContainer.className = 'flex w-[13.8125rem] items-start rounded-md bg-white shadow-lg flex-col p-3';
+  captionContainer.className = 'flex w-[13.8125rem] items-start rounded-md bg-white shadow-md border-r-2 flex-col p-3';
 
   // Create profile section
   const profileSection = document.createElement('div');
