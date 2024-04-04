@@ -62,6 +62,14 @@ export const VideoComponent = () => {
   });
 
   useEffect(() => {
+    if (isStreamSubscribed) {
+      document.getElementsByClassName('OT_name')[0]
+        ? (document.getElementsByClassName('OT_name')[0].innerHTML = state.source.value)
+        : null;
+    }
+  }, [isStreamSubscribed, document.getElementsByClassName('OT_name')[0]]);
+
+  useEffect(() => {
     FetchApiToken()
       .then((apiToken) => {
         setAuthToken(apiToken);
