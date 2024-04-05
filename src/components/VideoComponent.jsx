@@ -37,6 +37,7 @@ export const VideoComponent = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
   const [isSessionConnected, setIsSessionConnected] = useState(false);
+  const [showToolbar, setShowToolbar] = useState(false);
   const [captionLanguage, setCaptionLanguage] = useState(state.source);
   const [authToken, setAuthToken] = useState(null);
   const [translatedBuffer, setTranslatedBuffer] = useState(null);
@@ -62,12 +63,10 @@ export const VideoComponent = () => {
   });
 
   useEffect(() => {
-    if (isStreamSubscribed) {
-      document.getElementsByClassName('OT_name')[0]
-        ? (document.getElementsByClassName('OT_name')[0].innerHTML = state.source.value)
-        : null;
-    }
-  }, [isStreamSubscribed, document.getElementsByClassName('OT_name')[0]]);
+    document.getElementsByClassName('OT_name')[0]
+      ? (document.getElementsByClassName('OT_name')[0].innerHTML = state.source.value)
+      : null;
+  }, [document.getElementsByClassName('OT_name')[0]]);
 
   useEffect(() => {
     FetchApiToken()
@@ -112,8 +111,11 @@ export const VideoComponent = () => {
     toggleAudio(action);
   };
   const handleStartPublishing = () => {
-    setIsStreamSubscribed(true);
     createPublisher();
+    setIsStreamSubscribed(true);
+    setTimeout(() => {
+      setShowToolbar(true);
+    }, 2500);
   };
 
   const handleStartWebinar = () => {
@@ -139,7 +141,7 @@ export const VideoComponent = () => {
   const renderToolbar = () => {
     return (
       <>
-        {isSessionConnected && isInterviewStarted ? (
+        {showToolbar ? (
           <div className="h-full flex items-center justify-center ml-24 basis-2/12">
             {isAudioEnabled ? (
               <button onClick={() => onToggleAudio(false)}>
