@@ -62,7 +62,7 @@ export const WebsocketConnection = ({
   // converting audio blob to float32array and send to websocket
   const publishSourceAudioToWebsocket = async () => {
     let mediaStream;
-    console.log("STARTED PUBLISHING!!!");
+    console.log('STARTED PUBLISHING!!!');
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       const userMedia = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -77,21 +77,20 @@ export const WebsocketConnection = ({
 
     // Processor to encode audio data to PCM and push encoded data to server
     processor.onaudioprocess = (event) => {
-        const audioSamples = new Float32Array(event.inputBuffer.getChannelData(0));
-        const PCM16iSamples = [];
-        for (let i = 0; i < audioSamples.length; i++) {
-          let val = Math.floor(32767 * audioSamples[i]);
-          val = Math.min(32767, val);
-          val = Math.max(-32768, val);
-          PCM16iSamples.push(val);
-        }
-        sendMessage(JSON.stringify(new Int16Array(PCM16iSamples)));
+      const audioSamples = new Float32Array(event.inputBuffer.getChannelData(0));
+      const PCM16iSamples = [];
+      for (let i = 0; i < audioSamples.length; i++) {
+        let val = Math.floor(32767 * audioSamples[i]);
+        val = Math.min(32767, val);
+        val = Math.max(-32768, val);
+        PCM16iSamples.push(val);
+      }
+      sendMessage(JSON.stringify(new Int16Array(PCM16iSamples)));
     };
 
     audioSrc.connect(processor);
     processor.connect(audioContext.destination);
-  }
-
+  };
 
   const publishToSubs = useCallback((message) => {
     setIsPlaying(true);
@@ -117,7 +116,7 @@ export const WebsocketConnection = ({
   // render publishSourceAudioToWebsocket function for every chunk of data
   useEffect(() => {
     publishSourceAudioToWebsocket();
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!isPlaying && playingQueue.length > 0) {
