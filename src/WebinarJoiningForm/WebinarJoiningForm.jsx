@@ -130,7 +130,7 @@ export const WebinarJoiningForm = () => {
                   disabled={isClicked}
                   onClick={submitButton}
                 >
-                  Join webinar
+                  Start webinar
                 </button>
               </div>
             </div>
