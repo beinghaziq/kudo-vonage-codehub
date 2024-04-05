@@ -6,11 +6,14 @@ import { useVonagePublisher } from '../Hooks/useVonagePublisher';
 import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnection.jsx';
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
 import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
-import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
 import FetchApiToken from '../ExternalApiIntegration/fetchApiToken.js';
+import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
 import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
+import Avatar from 'react-avatar';
+
+// Import Images
 import logo from '../assets/black-logo.png';
 import webinar from '../assets/webinar.svg';
 import publisher from '../assets/publish.svg';
@@ -22,14 +25,15 @@ import micOff from '../assets/Micoff.svg';
 import invite from '../assets/invite.svg';
 import close from '../assets/X.svg';
 
-import Avatar from 'react-avatar';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Define Component
 export const VideoComponent = () => {
+  // State and Ref Declarations
   const location = useLocation();
-  const state = location.state.form;
+  const state = location.state.webinarFormData;
   const opentokApiToken = location.state.apiToken;
-  const predefinedTargetLanguge = state.target.map((x) => x.value);
+  const predefinedTargetLanguage = state.target.map((x) => x.value);
   const [isInterviewStarted, setIsInterviewStarted] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -56,6 +60,7 @@ export const VideoComponent = () => {
     ? `${window.location.origin}/webinar/guest/?sessionId=${opentokApiToken.session_id}&sourceLanguage=${state.source.value}&name=${state.name}`
     : null;
 
+  // Effect Hooks
   useEffect(() => {
     if (!languageExists) {
       predefinedLanguages.push(state.source);
@@ -72,7 +77,7 @@ export const VideoComponent = () => {
     FetchApiToken()
       .then((apiToken) => {
         setAuthToken(apiToken);
-        CreateTranslationResource(predefinedTargetLanguge, state.source.value, state.gender, apiToken)
+        CreateTranslationResource(predefinedTargetLanguage, state.source.value, state.gender, apiToken)
           .then((id) => setResourceId(id))
           .catch((error) => console.error('Error creating translation resource:', error));
       })
@@ -100,6 +105,7 @@ export const VideoComponent = () => {
     }
   }, [isStreamSubscribed]);
 
+  // Event Handlers
   const handleCopyLink = () => {
     navigator.clipboard.writeText(JoiningLink);
     setIsButtonClicked(false);
@@ -110,6 +116,7 @@ export const VideoComponent = () => {
     setIsAudioEnabled(action);
     toggleAudio(action);
   };
+
   const handleStartPublishing = () => {
     createPublisher();
     setIsStreamSubscribed(true);

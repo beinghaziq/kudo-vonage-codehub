@@ -4,18 +4,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { Label, Radio } from 'flowbite-react';
-
 import { sourceLanguages } from '../constants/sourceLanguages.js';
 import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import { TERMS_CONDITIONS_LINK, COOKIE_POLICY_LINK, PRIVACY_POLICY_LINK } from '../constants/ExternalLinks.js';
 import logo from '../assets/kudo.png';
 import { createVonageApiTokens } from '../ExternalApiIntegration/createVonageApiTokens.js';
+
 export const WebinarJoiningForm = () => {
   const navigate = useNavigate();
   const [selectedGender, setSelectedGender] = useState('female');
   const [isClicked, setIsClicked] = useState(false);
 
-  const [form, setForm] = useState({
+  const [webinarFormData, setWebinarFormData] = useState({
     name: '',
     target: predefinedLanguages,
     source: '',
@@ -23,23 +23,24 @@ export const WebinarJoiningForm = () => {
     gender: selectedGender,
   });
 
-  const bgColor = !!(form.name && form.source) ? '#F8C73E' : '#C8E2F3';
-  const sourcelanguageOptions = sourceLanguages.map((language) => ({
+  const bgColor = !!(webinarFormData.name && webinarFormData.source) ? '#F8C73E' : '#C8E2F3';
+  const sourceLanguageList = sourceLanguages.map((language) => ({
     value: language.code,
     label: language.name,
   }));
 
   const submitButton = (e) => {
     setIsClicked(true);
-    if (!predefinedLanguages.find((lang) => lang.value === form.source.value)) {
-      predefinedLanguages.push(form.source);
+    if (!predefinedLanguages.find((lang) => lang.value === webinarFormData.source.value)) {
+      predefinedLanguages.push(webinarFormData.source);
     }
+
     e.preventDefault();
     createVonageApiTokens()
       .then((tokens) => {
         navigate('/webinar', {
           state: {
-            form: { ...form, gender: selectedGender, target: predefinedLanguages },
+            webinarFormData: { ...webinarFormData, gender: selectedGender, target: predefinedLanguages },
             apiToken: tokens,
           },
         });
@@ -48,11 +49,11 @@ export const WebinarJoiningForm = () => {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setWebinarFormData({ ...webinarFormData, [e.target.name]: e.target.value });
   };
 
   const handleSourceChange = (selectedOption) => {
-    setForm({ ...form, source: selectedOption });
+    setWebinarFormData({ ...webinarFormData, source: selectedOption });
   };
 
   const handleGenderChange = (event) => {
@@ -82,7 +83,7 @@ export const WebinarJoiningForm = () => {
                 <Select
                   className="w-80"
                   placeholder="Select Speaking Language"
-                  options={sourcelanguageOptions}
+                  options={sourceLanguageList}
                   styles={{
                     control: (baseStyles) => ({
                       ...baseStyles,
