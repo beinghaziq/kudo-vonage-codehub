@@ -12,6 +12,7 @@ export const WebsocketConnection = ({
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
   const [isPlaying, setIsPlaying] = useState(false);
   const [playingQueue, setPlayingQueue] = useState([]);
+  const audioContext = new AudioContext({ sampleRate: 16000 });
   // converting the data to valid binary format
   function convertDataURIToBinary(dataURI) {
     var BASE64_MARKER = ';base64,';
@@ -59,17 +60,38 @@ export const WebsocketConnection = ({
   });
 
   // converting audio blob to float32array and send to websocket
-  const convertBlobToArray = useCallback(async () => {
-    const arrayBuffer = await dataBlobUrl.arrayBuffer();
+  const publishSourceAudioToWebsocket = async () => {
+    let mediaStream;
+    console.log("STARTED PUBLISHING!!!");
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      const userMedia = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
 
-    const dataView = new DataView(arrayBuffer);
-    const pcmData = new Float32Array(arrayBuffer.byteLength / 4);
-
-    for (let i = 0; i < pcmData.length; i++) {
-      pcmData[i] = dataView.getInt16(i * 4, true);
+      // get media stream
+      mediaStream = new MediaStream();
+      mediaStream.addTrack(userMedia.getAudioTracks()[0]);
     }
-    sendMessage(JSON.stringify(pcmData));
-  }, [dataBlobUrl, sendMessage]);
+    const audioSrc = audioContext.createMediaStreamSource(mediaStream);
+    const processor = audioContext.createScriptProcessor(1024, 1, 1);
+
+    // Processor to encode audio data to PCM and push encoded data to server
+    processor.onaudioprocess = (event) => {
+        const audioSamples = new Float32Array(event.inputBuffer.getChannelData(0));
+        const PCM16iSamples = [];
+        for (let i = 0; i < audioSamples.length; i++) {
+          let val = Math.floor(32767 * audioSamples[i]);
+          val = Math.min(32767, val);
+          val = Math.max(-32768, val);
+          PCM16iSamples.push(val);
+        }
+        sendMessage(JSON.stringify(new Int16Array(PCM16iSamples)));
+    };
+
+    audioSrc.connect(processor);
+    processor.connect(audioContext.destination);
+  }
+
 
   const publishToSubs = useCallback((message) => {
     setIsPlaying(true);
@@ -92,10 +114,10 @@ export const WebsocketConnection = ({
     }
   });
 
-  // render convertBlobToArray function for every chunk of data
+  // render publishSourceAudioToWebsocket function for every chunk of data
   useEffect(() => {
-    convertBlobToArray();
-  }, [dataBlobUrl, convertBlobToArray]);
+    publishSourceAudioToWebsocket();
+  }, [])
 
   useEffect(() => {
     if (!isPlaying && playingQueue.length > 0) {
