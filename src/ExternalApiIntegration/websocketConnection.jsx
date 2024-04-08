@@ -1,55 +1,28 @@
 // Ensure you have installed the following React packages: react-use-websocket and file-saver
 import useWebSocket from 'react-use-websocket';
 import { useCallback, useEffect, useState } from 'react';
+import { predefinedLanguages } from '../constants/PredefinedLanguages';
+import { getAudioContext } from '../constants/AudioContext';
 
 export const WebsocketConnection = ({
   dataBlobUrl,
   resourceId,
   isInterviewStarted,
   publishTranslatedAudio,
+  connectMediaStreamToTokbox,
   authToken,
 }) => {
   const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playingQueue, setPlayingQueue] = useState([]);
-  const audioContext = new AudioContext({ sampleRate: 16000 });
-  // converting the data to valid binary format
-  function convertDataURIToBinary(dataURI) {
-    var BASE64_MARKER = ';base64,';
-    var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-    var base64 = dataURI.substring(base64Index);
-    var raw = window.atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
-    var rawLength = raw.length;
-    var array = new Uint8Array(new ArrayBuffer(rawLength));
+  const [languageAudioData, _setLanguageAudioData] = useState({});
+  const [mediaStreamDestinations, _setMediaStreamDestinations] = useState({});
+  const audioContext = getAudioContext();
 
-    for (var i = 0; i < rawLength; i++) {
-      array[i] = raw.charCodeAt(i);
-    }
-    return array;
-  }
-
-  const { getWebSocket, sendMessage } = useWebSocket(SERVER_URL, {
+  const { sendMessage } = useWebSocket(SERVER_URL, {
     onOpen: () => {
       console.log('WebSocket connection established.');
     },
     onMessage: (message) => {
-      let data = JSON.parse(message.data);
-      console.log('Translating your audio...');
-      console.log('Websocket response', data);
-
-      var data1 = 'audio/wav;base64,' + data.audioData;
-      var bufferData = convertDataURIToBinary(data1);
-      var audioBlob = new Blob([bufferData], { type: 'audio/wav' });
-
-      var reader = new FileReader();
-      reader.onload = function (event) {
-        var audioData = event.target.result;
-        publishTranslatedAudio(audioData, data.targetLanguage, data.text);
-      };
-      reader.readAsArrayBuffer(audioBlob);
-      if (!isInterviewStarted) {
-        getWebSocket().close();
-      }
+      processResponseFromWebsocket(message);
     },
     onClose: (e) => {
       console.log('closed', e);
@@ -58,6 +31,21 @@ export const WebsocketConnection = ({
     shouldReconnect: () => false,
     protocols: ['Authorization', authToken],
   });
+
+  const initializeData = () => {
+    predefinedLanguages.forEach((language) => {
+      const langCode = language.value;
+      languageAudioData[langCode] = {};
+      languageAudioData[langCode]['isPlaying'] = false;
+      languageAudioData[langCode]['data'] = [];
+
+      const mediaStreamDestination = audioContext.createMediaStreamDestination();
+      mediaStreamDestinations[langCode] = mediaStreamDestination;
+      connectMediaStreamToTokbox(langCode, mediaStreamDestination);
+    });
+
+    console.log('languageAudioData', languageAudioData);
+  };
 
   // converting audio blob to float32array and send to websocket
   const publishSourceAudioToWebsocket = async () => {
@@ -92,36 +80,68 @@ export const WebsocketConnection = ({
     processor.connect(audioContext.destination);
   };
 
-  const publishToSubs = useCallback((message) => {
-    setIsPlaying(true);
-    let data = JSON.parse(message.data);
-    console.log('Translating your audio...');
-    console.log('Websocket response', data);
+  const processResponseFromWebsocket = (response) => {
+    const data = JSON.parse(response.data);
+    const audioBuffer = base64ToArrayBuffer(data.audioData);
+    const targetLanguage = data.targetLanguage;
+    const subtitle = data.text;
+    const audioDuration = data.audioDuration;
+    const requestId = data.requestId;
 
-    var data1 = 'audio/wav;base64,' + data.audioData;
-    var bufferData = convertDataURIToBinary(data1);
-    var audioBlob = new Blob([bufferData], { type: 'audio/wav' });
+    languageAudioData[targetLanguage]['data'].push({
+      requestId,
+      audioBuffer,
+      targetLanguage,
+      subtitle,
+      audioDuration,
+    });
 
-    var reader = new FileReader();
-    reader.onload = function (event) {
-      var audioData = event.target.result;
-      publish(audioData, data.targetLanguage, userTargetLanguage, data.text, setIsPlaying);
-    };
-    reader.readAsArrayBuffer(audioBlob);
-    if (!isInterviewStarted) {
-      getWebSocket().close();
+    playAudio(targetLanguage);
+  };
+
+  const playAudio = async (language) => {
+    if (!languageAudioData[language].isPlaying) {
+      const data = languageAudioData[language]['data'].shift();
+      languageAudioData[language].isPlaying = true; // denotes that the language audio is still playing
+
+      try {
+        const decodedAudioBuffer = await audioContext.decodeAudioData(data.audioBuffer); // decode data from Uint8Array
+        const source = audioContext.createBufferSource();
+        source.buffer = decodedAudioBuffer;
+        source.connect(mediaStreamDestinations[language]);
+        console.log('decodedAudioBuffer:', decodedAudioBuffer);
+        connectMediaStreamToTokbox(language, mediaStreamDestinations[language]);
+        source.start();
+
+        // callback for when audio buffer has ended
+        source.onended = () => {
+          languageAudioData[language].isPlaying = false;
+          if (languageAudioData[language]['data'].length > 0) {
+            playAudio(language); // recalling for next audio to play
+          }
+        };
+      } catch (e) {
+        console.log(`Error occurred while publishing ${language} ${data?.requestId} ${JSON.stringify(e)}`);
+        languageAudioData[language].isPlaying = false;
+      }
+
+      publishTranslatedAudio(language, data.subtitle);
     }
-  });
+  };
 
-  // render publishSourceAudioToWebsocket function for every chunk of data
+  // Function to convert a base64 string to an ArrayBuffer
+  const base64ToArrayBuffer = (data) => {
+    const binaryString = window.atob(data); // Decode base64
+    const length = binaryString.length;
+    const bytes = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  };
+
   useEffect(() => {
+    initializeData();
     publishSourceAudioToWebsocket();
   }, []);
-
-  useEffect(() => {
-    if (!isPlaying && playingQueue.length > 0) {
-      publishToSubs(playingQueue[0]);
-      setPlayingQueue(playingQueue.slice(1));
-    }
-  }, [isPlaying]);
 };

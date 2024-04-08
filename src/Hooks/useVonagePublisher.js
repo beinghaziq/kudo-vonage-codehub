@@ -3,7 +3,8 @@ import OT from '@opentok/client';
 import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import { handleError } from '../Helpers/HandleError.js';
 import { addCaptionsForSubscriber } from '../VonageIntegration/AddCaptionsForSubscriber.js';
-import { getAudioBuffer, createAudioStream, sendCaption } from '../VonageIntegration/publishData.js';
+import { createAudioStream, sendCaption } from '../VonageIntegration/publishData.js';
+import { getAudioContext } from '../constants/AudioContext.js';
 
 export const useVonagePublisher = (session, hostName, captionLanguage) => {
   const [publishers, setPublishers] = useState({});
@@ -11,7 +12,7 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
   const targetLanguages = predefinedLanguages.map((language) => language.value);
 
   const createPublisher = () => {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioContext = getAudioContext();
     // Create audio stream from mp3 file and video stream from webcam
     Promise.all([OT.getUserMedia({ videoSource: null })])
       .then(() => {
@@ -58,32 +59,16 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
       });
   };
 
-  const publishTranslatedAudio = (translatedBuffer, websocketTargetLanguage, CaptionText) => {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    // Create audio stream from mp3 file and video stream from webcam
-    Promise.all([
-      translatedBuffer ? getAudioBuffer(translatedBuffer, audioContext) : null,
-      OT.getUserMedia({ videoSource: null }),
-    ])
-      .then((results) => {
-        const [audioBuffer] = results;
-        const { audioStream } = createAudioStream(audioBuffer, audioContext);
+  const connectMediaStreamToTokbox = (langCode, mediaStreamDestination) => {
+    console.log('stream:', mediaStreamDestination);
+    publishers[langCode].setAudioSource(mediaStreamDestination.stream.getAudioTracks()[0]);
+  };
 
-        console.log('Publishing the audio....');
-        // If publisher1 is already initialized, update the audio source
-        sendCaption(session, CaptionText, websocketTargetLanguage);
-        if (websocketTargetLanguage == captionLanguage) {
-          addCaptionsForSubscriber(CaptionText, hostName);
-        }
-        publishers[websocketTargetLanguage].publishAudio(false); // Stop publishing audio temporarily
-        publishers[websocketTargetLanguage].setAudioSource(audioStream.getAudioTracks()[0]); // Set new audio source
-        publishers[websocketTargetLanguage].publishAudio(true); // Start publishing audio again
-        publishers[websocketTargetLanguage].publishCaptions(true);
-      })
-      .catch((error) => {
-        audioContext.close();
-        throw error;
-      });
+  const publishTranslatedAudio = (targetLanguage, subtitle) => {
+    sendCaption(session, subtitle, targetLanguage);
+    if (targetLanguage == captionLanguage) {
+      addCaptionsForSubscriber(subtitle, hostName);
+    }
   };
 
   // The following functions are used in functionality customization
@@ -119,5 +104,6 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
     stopStreaming,
     createPublisher,
     publishTranslatedAudio,
+    connectMediaStreamToTokbox,
   };
 };
