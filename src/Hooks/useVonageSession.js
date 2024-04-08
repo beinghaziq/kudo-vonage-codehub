@@ -11,7 +11,8 @@ export const useVonageSession = (
   setIsSessionConnected,
   selectedTargetLanguage = 'ENG',
   hostName,
-  captionLanguage
+  captionLanguage,
+  setIsStreamConnected
 ) => {
   const [session, setSession] = useState();
   const [subscriber, setSubscriber] = useState();
@@ -40,6 +41,12 @@ export const useVonageSession = (
       );
     }
   }, [selectedTargetLanguage, session, setIsSessionConnected, token, captionLanguage]);
+
+  useEffect(() => {
+    if (setIsStreamConnected) {
+      setIsStreamConnected(!(streams.length === 0));
+    }
+  }, [streams]);
 
   const toggleSession = () => {
     if (session && session.isConnected()) {

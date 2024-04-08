@@ -23,6 +23,7 @@ export const JoiningVideoComponent = () => {
   const [openModal, setOpenModal] = useState(false);
   const sourceLanguage = sourceLanguages.find((language) => language.code === sourceCode);
   const languageExists = predefinedLanguages.find((lang) => lang.value === sourceCode);
+  const [isStreamConnected, setIsStreamConnected] = useState(false);
   const [SelectedLanguage, setSelectedLanguage] = useState(sourceLanguage);
   const [captionLanguage, setCaptionLanguage] = useState({ value: sourceLanguage.code, label: sourceLanguage.name });
   const [languageTooltip, setLanguageTooltip] = useState(true);
@@ -33,7 +34,8 @@ export const JoiningVideoComponent = () => {
     null,
     SelectedLanguage.code,
     hostName,
-    captionLanguage.value
+    captionLanguage.value,
+    setIsStreamConnected
   );
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export const JoiningVideoComponent = () => {
           <h4 className="text-[#075985] font-roboto font-bold text-xl ml-24 leading-[1.25rem]">
             Hi {hostName}, Welcome to KUDO’s Webinar
           </h4>
-          {isWebinarStarted ? (
+          {isStreamConnected ? (
             <div className="z-10">
               <LanguageSelector
                 setCaptionLanguage={setCaptionLanguage}
