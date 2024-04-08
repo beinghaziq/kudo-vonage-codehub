@@ -51,8 +51,15 @@ export const VideoComponent = () => {
     opentokApiToken?.publisher_token,
     setIsSessionConnected
   );
-  const { createPublisher, publishTranslatedAudio, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming } =
-    useVonagePublisher(session, state.name, captionLanguage.value);
+  const {
+    createPublisher,
+    publishTranslatedAudio,
+    toggleAudio,
+    toggleVideo,
+    togglePublisherDestroy,
+    stopStreaming,
+    connectMediaStreamToTokbox,
+  } = useVonagePublisher(session, state.name, captionLanguage.value);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
@@ -292,6 +299,7 @@ export const VideoComponent = () => {
             isInterviewStarted={isInterviewStarted}
             resourceId={resourceId}
             publishTranslatedAudio={publishTranslatedAudio}
+            connectMediaStreamToTokbox={connectMediaStreamToTokbox}
             authToken={authToken}
           />
         ) : null}
