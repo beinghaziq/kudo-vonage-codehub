@@ -12,7 +12,7 @@ export const WebsocketConnection = ({
   connectMediaStreamToTokbox,
   authToken,
 }) => {
-  const SERVER_URL = `wss://external-api-preprod.meetkudo.com/api/v1/translate?id=${resourceId}`;
+  const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
   const [languageAudioData, _setLanguageAudioData] = useState({});
   const [mediaStreamDestinations, _setMediaStreamDestinations] = useState({});
   const audioContext = getAudioContext();
