@@ -78,7 +78,7 @@ export const JoiningVideoComponent = () => {
       <div className="h-screen pb-24 px-16">
         <div className="flex items-center justify-start gap-4">
           <h4 className="text-[#075985] font-roboto font-bold text-xl ml-24 leading-[1.25rem]">
-            Hi {hostName}, Welcome to KUDO’s Webinar
+            Welcome to KUDO’s Webinar
           </h4>
           {isStreamConnected ? (
             <div className="z-10">
