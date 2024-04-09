@@ -273,7 +273,7 @@ export const VideoComponent = () => {
         </div>
         <div className="flex items-center justify-end">
           <button
-            className={`flex w-[9.25rem] p-[0.5375rem] justify-center items-center gap-[0.625rem] rounded-[0.9375rem] ${openModal ? 'bg-[#075985] text-white' : 'bg-[#CCCCCC]'}`}
+            className={`flex w-[9.25rem] p-[0.5375rem] text-black font-500 font-inter text-base justify-center items-center gap-[0.625rem] rounded-[0.9375rem] ${openModal ? 'bg-[#075985] text-white' : 'bg-[#CCCCCC]'}`}
             onClick={() => setOpenModal(true)}
             disabled={!isInterviewStarted}
           >

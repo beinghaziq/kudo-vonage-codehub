@@ -20,9 +20,9 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
         const localPublishers = {};
         for (let i = 0; i < targetLanguages.length; i++) {
           const publisherOptions = {
-            insertMode: "append",
-            width: "100%",
-            height: "100%",
+            insertMode: 'append',
+            width: '100%',
+            height: '100%',
             // Pass in the generated audio track as our custom audioSource
             audioSource: audioStream.getAudioTracks()[0],
             // Enable stereo audio

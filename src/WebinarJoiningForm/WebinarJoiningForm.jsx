@@ -108,7 +108,7 @@ export const WebinarJoiningForm = () => {
                   onChange={(selectedOption) => handleSourceChange(selectedOption)}
                 />
                 <div className="flex flex-col flex-col-2 justify-content items-center">
-                  <p className="text-black mb-2">Select your Voice Preference</p>
+                  <p className="text-black font-500 font-inter text-lg mb-2">Select your Voice Preference</p>
                   <div className="flex gap-2 justify-content items-center">
                     <Radio
                       className="focus:ring-[#075985] text-[#075985]"
