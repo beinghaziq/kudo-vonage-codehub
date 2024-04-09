@@ -16,7 +16,6 @@ import Avatar from 'react-avatar';
 // Import Images
 import logo from '../assets/black-logo.png';
 import webinar from '../assets/webinar.svg';
-import publisher from '../assets/publish.svg';
 import copyLink from '../assets/copyLink.svg';
 import mic from '../assets/Mic.svg';
 import video from '../assets/Video.svg';
@@ -112,6 +111,12 @@ export const VideoComponent = () => {
     }
   }, [isStreamSubscribed]);
 
+  useEffect(() => {
+    if (isInterviewStarted && isSessionConnected) {
+      handleStartPublishing();
+    }
+  }, [isInterviewStarted, isSessionConnected]);
+
   // Event Handlers
   const handleCopyLink = () => {
     navigator.clipboard.writeText(JoiningLink);
@@ -195,7 +200,7 @@ export const VideoComponent = () => {
           Hi {state.name}, Welcome to KUDO’s Webinar
         </h4>
         <div className="h-full p-6 flex flex-row">
-          <div className="h-full w-3/4 bg-[#F5F5F5] rounded-tl-[6rem] p-4 rounded-bl-[6rem]">
+          <div className="h-full w-3/4 bg-[#EAEAEA] rounded-tl-[6rem] p-4 rounded-bl-[6rem]">
             <div className="h-full flex flex-col mt-6">
               <div className="h-full flex flex-row basis-10/12">
                 <div className="h-full flex flex-col gap-6 mt-3">
@@ -213,16 +218,7 @@ export const VideoComponent = () => {
                       </button>
                     </>
                   ) : null}
-                  <button
-                    className="flex flex-col items-center p-2 disabled:opacity-60"
-                    onClick={handleStartPublishing}
-                    disabled={!(isInterviewStarted && isSessionConnected) || isStreamSubscribed}
-                  >
-                    <img src={publisher} alt="logo" />
-                    <p className="text-[#747474] text-center font-noto-sans text-xs leading-4 font-normal">
-                      Start Publishing
-                    </p>
-                  </button>
+
                   <button
                     className="flex flex-col items-center p-2 disabled:opacity-60"
                     disabled={!(opentokApiToken && isInterviewStarted && isSessionConnected)}
@@ -235,7 +231,7 @@ export const VideoComponent = () => {
                   </button>
                   {isButtonClicked ? (
                     <>
-                      <div className="w-[19.1875rem] h-[2.4375rem] rounded-[1.5625rem] border-1 border-[#747474] bg-[#C8E2F3] gap-3 flex items-center justify-end absolute top-[23rem] z-10">
+                      <div className="w-[19.1875rem] h-[2.4375rem] rounded-[1.5625rem] border-1 border-[#747474] bg-[#C8E2F3] gap-3 flex items-center justify-end absolute top-[18rem] z-10">
                         <p className="text-[#747474] text-center font-noto-sans text-xs font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[190px]">
                           {JoiningLink}
                         </p>
