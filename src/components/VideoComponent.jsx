@@ -260,7 +260,7 @@ export const VideoComponent = () => {
               {isStreamSubscribed ? renderToolbar() : null}
             </div>
           </div>
-          <div className="h-full w-1/4 bg-[#F5F5F5] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
+          <div className="h-full w-1/4 bg-[#EAEAEA] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
             <div className="flex justify-start items-center m-4 z-10">
               <LanguageSelector
                 setCaptionLanguage={setCaptionLanguage}

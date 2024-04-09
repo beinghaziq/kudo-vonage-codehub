@@ -69,19 +69,19 @@ export const WebinarJoiningForm = () => {
 
   return (
     <div className="h-screen p-16">
-      <div className="h-full p-8 rounded-3xl bg-[#F5F5F5]">
+      <div className="h-full p-8 rounded-3xl bg-[#EAEAEA]">
         <div className="h-full flex flex-row items-center justify-center bg-dark-200 rounded-3xl">
           <div className="w-1/2 h-full flex items-center justify-center bg-black rounded-tl-3xl p-4 rounded-bl-3xl">
             <div className="flex items-center justify-center h-32 w-48">
               <img src={logo} alt="logo" />
             </div>
           </div>
-          <div className="w-1/2 h-full flex flex-col items-center justify-center rounded-tr-3xl rounded-br-3xl p-2 bg-[#F5F5F5]">
+          <div className="w-1/2 h-full flex flex-col items-center justify-center rounded-tr-3xl rounded-br-3xl p-2 bg-[#EAEAEA]">
             <div className="flex flex-col items-center my-auto justify-center gap-24">
               <h1 className="text-TextBlue text-center font-roboto font-bold text-3xl">Welcome!</h1>
               <div className="flex flex-col gap-8">
                 <input
-                  className="w-80 h-11 rounded-lg border-2 focus:border-[#075985] hover:border-[#075985] border-[#747474] bg-[#F5F5F5] p-[0.35rem] pl-2"
+                  className="w-80 h-11 rounded-lg border-2 focus:border-[#075985] hover:border-[#075985] border-[#747474] bg-[#EAEAEA] p-[0.35rem] pl-2"
                   type="text"
                   placeholder="Your Name"
                   name="name"
@@ -95,7 +95,7 @@ export const WebinarJoiningForm = () => {
                     control: (baseStyles) => ({
                       ...baseStyles,
                       border: '2px solid #747474',
-                      backgroundColor: '#F5F5F5',
+                      backgroundColor: '#EAEAEA',
                       borderRadius: '0.5rem',
                       height: '44px',
                       boxShadow: 'none',

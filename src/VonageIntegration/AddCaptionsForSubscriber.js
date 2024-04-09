@@ -40,7 +40,7 @@ export function addCaptionsForSubscriber(CaptionText, hostName = 'host') {
   subscriberContainer.appendChild(captionContainer);
 
   // Remove the captions after 5 seconds
-  const removalTimerDuration = 8 * 1000;
+  const removalTimerDuration = 6 * 1000;
   setTimeout(() => {
     captionContainer.remove();
   }, removalTimerDuration);
