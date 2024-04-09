@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { Label, Radio } from 'flowbite-react';
@@ -29,8 +29,15 @@ export const WebinarJoiningForm = () => {
     label: language.name,
   }));
 
+  useEffect(() => {
+    if (webinarFormData.name && webinarFormData.source) {
+      setIsClicked(true);
+    } else {
+      setIsClicked(false);
+    }
+  }, [webinarFormData]);
+
   const submitButton = (e) => {
-    setIsClicked(true);
     if (!predefinedLanguages.find((lang) => lang.value === webinarFormData.source.value)) {
       predefinedLanguages.push(webinarFormData.source);
     }
@@ -128,7 +135,7 @@ export const WebinarJoiningForm = () => {
                   style={{ backgroundColor: bgColor }}
                   value="submit"
                   type="submit"
-                  disabled={isClicked}
+                  disabled={!isClicked}
                   onClick={submitButton}
                 >
                   Start webinar
