@@ -78,7 +78,7 @@ export const JoiningVideoComponent = () => {
       <div className="h-screen pb-24 px-16">
         <div className="flex items-center justify-start gap-4">
           <h4 className="text-[#075985] font-roboto font-bold text-xl ml-24 leading-[1.25rem]">
-            Hi {hostName}, Welcome to KUDO’s Webinar
+            Welcome to KUDO’s Webinar
           </h4>
           {isStreamConnected ? (
             <div className="z-10">
@@ -115,7 +115,7 @@ export const JoiningVideoComponent = () => {
         </div>
 
         <div className="h-full p-6 flex flex-row">
-          <div className="h-full w-3/4 bg-[#F5F5F5] rounded-tl-[6rem] p-4 rounded-bl-[6rem]">
+          <div className="h-full w-3/4 bg-[#EAEAEA] rounded-tl-[6rem] p-4 rounded-bl-[6rem]">
             <div className="h-full flex flex-col mt-6">
               <div className="h-full flex flex-row basis-10/12">
                 <div className="h-full flex flex-col gap-6 mt-3">
@@ -146,7 +146,7 @@ export const JoiningVideoComponent = () => {
               </div>
             </div>
           </div>
-          <div className="h-full w-1/4 bg-[#F5F5F5] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
+          <div className="h-full w-1/4 bg-[#EAEAEA] rounded-tr-[6rem] ml-4 rounded-br-[6rem]">
             <div className="flex justify-start items-center m-4 z-10">
               <LanguageSelector
                 setCaptionLanguage={setCaptionLanguage}
