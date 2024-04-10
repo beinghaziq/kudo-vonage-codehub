@@ -3,10 +3,10 @@ import useWebSocket from 'react-use-websocket';
 import { useEffect, useState } from 'react';
 import { predefinedLanguages } from '../constants/PredefinedLanguages';
 import { getAudioContext } from '../constants/AudioContext';
-import { base64ToArrayBuffer, publishTranslatedAudio } from '../helper/PublishTargetAudio';
-import { publishSourceAudioToWebsocket } from '../helper/PublishSourceAudio';
+import { base64ToArrayBuffer, publishTranslatedAudio } from '../Helpers/PublishTargetAudio';
+import { publishSourceAudioToWebsocket } from '../Helpers/PublishSourceAudio';
 
-export const WebsocketConnection = ({ resourceId, tbPublisherCallback, authToken }) => {
+export const WebsocketConnection = ({ resourceId, tbPublisherCallback, publishCaptionCallback, authToken }) => {
   const EXTERNAL_API_SOCKET_URL = process.env.REACT_APP_EXTERNAL_API_SOCKET_URL + `/translate?id=${resourceId}`;
   const [languageAudioData, _setLanguageAudioData] = useState({});
   const [mediaStreamDestinations, _setMediaStreamDestinations] = useState({});
@@ -38,6 +38,7 @@ export const WebsocketConnection = ({ resourceId, tbPublisherCallback, authToken
 
       const mediaStreamDestination = audioContext.createMediaStreamDestination();
       mediaStreamDestinations[langCode] = mediaStreamDestination;
+      tbPublisherCallback(langCode, mediaStreamDestination);
     });
   };
 
@@ -54,11 +55,12 @@ export const WebsocketConnection = ({ resourceId, tbPublisherCallback, authToken
     });
 
     // Publish translated audio in the target language
+    tbPublisherCallback(targetLanguage, mediaStreamDestinations[targetLanguage]);
     publishTranslatedAudio(
       targetLanguage,
       languageAudioData,
       mediaStreamDestinations[targetLanguage],
-      tbPublisherCallback
+      publishCaptionCallback
     );
   };
 

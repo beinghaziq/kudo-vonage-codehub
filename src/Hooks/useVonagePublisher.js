@@ -60,8 +60,11 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
       });
   };
 
-  const tbPublisherCallback = (langCode, mediaStreamDestination, caption) => {
+  const tbPublisherCallback = (langCode, mediaStreamDestination) => {
     publishers[langCode].setAudioSource(mediaStreamDestination.stream.getAudioTracks()[0]);
+  };
+
+  const publishCaptionCallback = (langCode, caption) => {
     sendCaption(session, caption, langCode);
     if (langCode == captionLanguage) {
       addCaptionsForSubscriber(caption, hostName);
@@ -101,5 +104,6 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
     stopStreaming,
     createPublisher,
     tbPublisherCallback,
+    publishCaptionCallback,
   };
 };

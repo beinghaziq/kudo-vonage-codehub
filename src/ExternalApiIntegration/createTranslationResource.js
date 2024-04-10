@@ -4,12 +4,12 @@ const EXTERNAL_API_SERVER_URL = process.env.REACT_APP_EXTERNAL_API_SERVER_URL;
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 
 const createTranslationResource = async (targetLanguage, sourceLanguage, gender, authToken) => {
-  console.log('Creating Translation Service...');
   const requestData = {
     clientId: CLIENT_ID,
     sourceLanguages: [sourceLanguage],
     targetLanguages: targetLanguage,
     voiceGender: gender,
+    allowMultipleSourceLanguages: false,
   };
 
   try {
@@ -23,6 +23,7 @@ const createTranslationResource = async (targetLanguage, sourceLanguage, gender,
       throw new Error('Failed to create translation resource');
     }
 
+    console.log('Created Translation Resource:', response.data.body.id);
     return response.data.body.id;
   } catch (error) {
     console.error('Error creating translation resource:', error);

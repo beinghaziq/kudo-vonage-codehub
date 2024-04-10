@@ -12,7 +12,12 @@ export const base64ToArrayBuffer = (data) => {
 };
 
 // Play Audio in Sequence
-export const publishTranslatedAudio = async (language, languageAudioData, destinationStream, tbPublisherCallback) => {
+export const publishTranslatedAudio = async (
+  language,
+  languageAudioData,
+  destinationStream,
+  publishCaptionCallback
+) => {
   if (!languageAudioData[language].isPlaying) {
     const data = languageAudioData[language]['data'].shift();
     languageAudioData[language].isPlaying = true; // denotes that the language audio is still playing
@@ -23,15 +28,14 @@ export const publishTranslatedAudio = async (language, languageAudioData, destin
       const source = audioContext.createBufferSource();
       source.buffer = decodedAudioBuffer;
       source.connect(destinationStream);
-      console.log('decodedAudioBuffer:', decodedAudioBuffer);
-      tbPublisherCallback(language, destinationStream, data.caption);
+      publishCaptionCallback(language, data.caption);
       source.start();
-
       // callback for when audio buffer has ended
       source.onended = () => {
         languageAudioData[language].isPlaying = false;
+        // recalling for next audio to play
         if (languageAudioData[language]['data'].length > 0) {
-          publishTranslatedAudio(language); // recalling for next audio to play
+          publishTranslatedAudio(language, languageAudioData, destinationStream, publishCaptionCallback);
         }
       };
     } catch (e) {

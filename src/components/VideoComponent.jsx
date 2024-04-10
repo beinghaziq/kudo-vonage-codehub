@@ -29,7 +29,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Define Component
 export const VideoComponent = () => {
   // State and Ref Declarations
-  const customToken = process.env.REACT_APP_CUSTOM_TOKEN || null;
+  const [authToken, setAuthToken] = useState(process.env.REACT_APP_CUSTOM_TOKEN || null);
   const location = useLocation();
   const state = location.state.webinarFormData;
   const opentokApiToken = location.state.apiToken;
@@ -43,15 +43,21 @@ export const VideoComponent = () => {
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
   const [captionLanguage, setCaptionLanguage] = useState(state.source);
-  const [authToken, setAuthToken] = useState(null);
   const languageExists = predefinedLanguages.find((lang) => lang.value === state.source.value);
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
     opentokApiToken?.publisher_token,
     setIsSessionConnected
   );
-  const { createPublisher, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming, tbPublisherCallback } =
-    useVonagePublisher(session, state.name, captionLanguage.value);
+  const {
+    createPublisher,
+    toggleAudio,
+    toggleVideo,
+    togglePublisherDestroy,
+    stopStreaming,
+    tbPublisherCallback,
+    publishCaptionCallback,
+  } = useVonagePublisher(session, state.name, captionLanguage.value);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
@@ -104,16 +110,13 @@ export const VideoComponent = () => {
   }, [isInterviewStarted, isSessionConnected]);
 
   const generateTokenAndCreateResource = async () => {
-    if (customToken) {
-      console.log('use custom token');
-      setAuthToken(customToken);
-    } else {
-      const apiToken = 'await FetchApiToken()';
-      setAuthToken(apiToken);
-      console.log('Token Generated');
+    let token = authToken;
+    if (!authToken) {
+      token = await FetchApiToken();
+      setAuthToken(token);
     }
 
-    CreateTranslationResource(predefinedTargetLanguage, state.source.value, state.gender, authToken)
+    CreateTranslationResource(predefinedTargetLanguage, state.source.value, state.gender, token)
       .then((id) => setResourceId(id))
       .catch((error) => console.error('Error creating translation resource:', error));
   };
@@ -292,6 +295,7 @@ export const VideoComponent = () => {
           <WebsocketConnection
             resourceId={resourceId}
             tbPublisherCallback={tbPublisherCallback}
+            publishCaptionCallback={publishCaptionCallback}
             authToken={authToken}
           />
         ) : null}
