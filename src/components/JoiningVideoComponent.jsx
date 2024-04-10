@@ -3,14 +3,13 @@ import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
 import { useLocation } from 'react-router-dom';
 import createSubscriberToken from '../ExternalApiIntegration/createSubscriberToken.js';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
-import { sourceLanguages } from '../constants/sourceLanguages.js';
-import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
 import Avatar from 'react-avatar';
 import webinar from '../assets/webinar.svg';
 import logo from '../assets/black-logo.png';
 import polygon from '../assets/Polygon.svg';
 import close from '../assets/X.svg';
+import { predefinedTargetLanguagesList, sourceLanguagesList } from '../constants/LanguagesList.js';
 
 export const JoiningVideoComponent = () => {
   const location = useLocation();
@@ -21,8 +20,8 @@ export const JoiningVideoComponent = () => {
   const [isWebinarStarted, setIsWebinarStarted] = useState(false);
   const [subscriberToken, setSubscriberToken] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const sourceLanguage = sourceLanguages.find((language) => language.code === sourceCode);
-  const languageExists = predefinedLanguages.find((lang) => lang.value === sourceCode);
+  const sourceLanguage = sourceLanguagesList.find((language) => language.code === sourceCode);
+  const languageExists = predefinedTargetLanguagesList.find((lang) => lang.value === sourceCode);
   const [isStreamConnected, setIsStreamConnected] = useState(false);
   const [SelectedLanguage, setSelectedLanguage] = useState(sourceLanguage);
   const [captionLanguage, setCaptionLanguage] = useState({ value: sourceLanguage.code, label: sourceLanguage.name });
@@ -40,7 +39,7 @@ export const JoiningVideoComponent = () => {
 
   useEffect(() => {
     if (!languageExists) {
-      predefinedLanguages.push({ value: sourceLanguage.code, label: sourceLanguage.name });
+      predefinedTargetLanguagesList.push({ value: sourceLanguage.code, label: sourceLanguage.name });
     }
   });
 
@@ -84,7 +83,7 @@ export const JoiningVideoComponent = () => {
             <div className="z-10">
               <LanguageSelector
                 setCaptionLanguage={setCaptionLanguage}
-                predefinedLanguages={predefinedLanguages}
+                predefinedTargetLanguagesList={predefinedTargetLanguagesList}
                 isCaption={false}
                 setLanguageTooltip={setLanguageTooltip}
                 setSelectedLanguage={setSelectedLanguage}
@@ -150,7 +149,7 @@ export const JoiningVideoComponent = () => {
             <div className="flex justify-start items-center m-4 z-10">
               <LanguageSelector
                 setCaptionLanguage={setCaptionLanguage}
-                predefinedLanguages={predefinedLanguages}
+                predefinedTargetLanguagesList={predefinedTargetLanguagesList}
                 isCaption={true}
                 setLanguageTooltip={setLanguageTooltip}
                 setSelectedLanguage={setSelectedLanguage}

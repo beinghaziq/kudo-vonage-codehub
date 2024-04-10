@@ -1,10 +1,10 @@
 // Ensure you have installed the following React packages: react-use-websocket and file-saver
 import useWebSocket from 'react-use-websocket';
 import { useEffect, useState } from 'react';
-import { predefinedLanguages } from '../constants/PredefinedLanguages';
 import { getAudioContext } from '../constants/AudioContext';
 import { base64ToArrayBuffer, publishTranslatedAudio } from '../Helpers/PublishTargetAudio';
 import { publishSourceAudioToWebsocket } from '../Helpers/PublishSourceAudio';
+import { predefinedTargetLanguagesList } from '../constants/LanguagesList';
 
 export const WebsocketConnection = ({ resourceId, tbPublisherCallback, publishCaptionCallback, authToken }) => {
   const EXTERNAL_API_SOCKET_URL = process.env.REACT_APP_EXTERNAL_API_SOCKET_URL + `/translate?id=${resourceId}`;
@@ -30,7 +30,7 @@ export const WebsocketConnection = ({ resourceId, tbPublisherCallback, publishCa
 
   // initialize data
   const initData = () => {
-    predefinedLanguages.forEach((language) => {
+    predefinedTargetLanguagesList.forEach((language) => {
       const langCode = language.value;
       languageAudioData[langCode] = {};
       languageAudioData[langCode]['isPlaying'] = false;
@@ -44,6 +44,7 @@ export const WebsocketConnection = ({ resourceId, tbPublisherCallback, publishCa
 
   const processResponseFromWebsocket = (response) => {
     const data = JSON.parse(response.data);
+    console.log('S2S Response:', data);
     const targetLanguage = data.targetLanguage;
 
     languageAudioData[targetLanguage]['data'].push({

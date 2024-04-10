@@ -10,7 +10,6 @@ import FetchApiToken from '../ExternalApiIntegration/fetchApiToken.js';
 import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
-import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import Avatar from 'react-avatar';
 
 // Import Images
@@ -25,6 +24,7 @@ import invite from '../assets/invite.svg';
 import close from '../assets/X.svg';
 
 import 'react-toastify/dist/ReactToastify.css';
+import { predefinedTargetLanguagesList } from '../constants/LanguagesList.js';
 
 // Define Component
 export const VideoComponent = () => {
@@ -43,7 +43,7 @@ export const VideoComponent = () => {
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
   const [captionLanguage, setCaptionLanguage] = useState(state.source);
-  const languageExists = predefinedLanguages.find((lang) => lang.value === state.source.value);
+  const languageExists = predefinedTargetLanguagesList.find((lang) => lang.value === state.source.value);
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
     opentokApiToken?.publisher_token,
@@ -68,7 +68,7 @@ export const VideoComponent = () => {
   // Effect Hooks
   useEffect(() => {
     if (!languageExists) {
-      predefinedLanguages.push(state.source);
+      predefinedTargetLanguagesList.push(state.source);
     }
   }, []);
 
@@ -268,7 +268,7 @@ export const VideoComponent = () => {
             <div className="flex justify-start items-center m-4 z-10">
               <LanguageSelector
                 setCaptionLanguage={setCaptionLanguage}
-                predefinedLanguages={predefinedLanguages}
+                predefinedTargetLanguagesList={predefinedTargetLanguagesList}
                 isCaption={true}
               />
             </div>

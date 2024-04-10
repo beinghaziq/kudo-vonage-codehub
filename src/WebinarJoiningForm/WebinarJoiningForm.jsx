@@ -4,11 +4,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { Label, Radio } from 'flowbite-react';
-import { sourceLanguages } from '../constants/sourceLanguages.js';
-import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import { TERMS_CONDITIONS_LINK, COOKIE_POLICY_LINK, PRIVACY_POLICY_LINK } from '../constants/ExternalLinks.js';
 import logo from '../assets/kudo.png';
 import { createVonageApiTokens } from '../ExternalApiIntegration/createVonageApiTokens.js';
+import { predefinedTargetLanguagesList, sourceLanguagesList } from '../constants/LanguagesList.js';
 
 export const WebinarJoiningForm = () => {
   const navigate = useNavigate();
@@ -17,14 +16,14 @@ export const WebinarJoiningForm = () => {
 
   const [webinarFormData, setWebinarFormData] = useState({
     name: '',
-    target: predefinedLanguages,
+    target: predefinedTargetLanguagesList,
     source: '',
     role: '',
     gender: selectedGender,
   });
 
   const bgColor = !!(webinarFormData.name && webinarFormData.source) ? '#F8C73E' : '#C8E2F3';
-  const sourceLanguageList = sourceLanguages.map((language) => ({
+  const sourceLanguageList = sourceLanguagesList.map((language) => ({
     value: language.code,
     label: language.name,
   }));
@@ -38,8 +37,8 @@ export const WebinarJoiningForm = () => {
   }, [webinarFormData]);
 
   const submitButton = (e) => {
-    if (!predefinedLanguages.find((lang) => lang.value === webinarFormData.source.value)) {
-      predefinedLanguages.push(webinarFormData.source);
+    if (!predefinedTargetLanguagesList.find((lang) => lang.value === webinarFormData.source.value)) {
+      predefinedTargetLanguagesList.push(webinarFormData.source);
     }
 
     e.preventDefault();
@@ -47,7 +46,7 @@ export const WebinarJoiningForm = () => {
       .then((tokens) => {
         navigate('/webinar', {
           state: {
-            webinarFormData: { ...webinarFormData, gender: selectedGender, target: predefinedLanguages },
+            webinarFormData: { ...webinarFormData, gender: selectedGender, target: predefinedTargetLanguagesList },
             apiToken: tokens,
           },
         });

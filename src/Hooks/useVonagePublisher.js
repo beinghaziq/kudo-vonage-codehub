@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import OT from '@opentok/client';
-import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import { handleError } from '../Helpers/HandleError.js';
 import { addCaptionsForSubscriber } from '../VonageIntegration/AddCaptionsForSubscriber.js';
 import { createAudioStream, sendCaption } from '../VonageIntegration/publishData.js';
 import { getAudioContext } from '../constants/AudioContext.js';
+import { predefinedTargetLanguagesList } from '../constants/LanguagesList.js';
 
 export const useVonagePublisher = (session, hostName, captionLanguage) => {
   const [publishers, setPublishers] = useState({});
 
-  const targetLanguages = predefinedLanguages.map((language) => language.value);
+  const targetLanguages = predefinedTargetLanguagesList.map((language) => language.value);
 
   const createPublisher = () => {
     const audioContext = getAudioContext();

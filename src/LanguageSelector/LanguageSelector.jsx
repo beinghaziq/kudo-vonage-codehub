@@ -7,7 +7,7 @@ import Caption from '../assets/Captions.svg';
 
 export const LanguageSelector = ({
   setCaptionLanguage,
-  predefinedLanguages,
+  predefinedTargetLanguagesList,
   isCaption,
   setLanguageTooltip,
   setSelectedLanguage,
@@ -36,7 +36,7 @@ export const LanguageSelector = ({
   return (
     <Select
       placeholder={<CustomPlaceholder />}
-      options={predefinedLanguages}
+      options={predefinedTargetLanguagesList}
       onChange={handleChange}
       onFocus={handleFocus}
       styles={{
