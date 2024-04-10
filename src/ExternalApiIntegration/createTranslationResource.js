@@ -1,24 +1,24 @@
 import { baseService } from './baseService.js';
 
+const EXTERNAL_API_SERVER_URL = process.env.REACT_APP_EXTERNAL_API_SERVER_URL;
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+
 const createTranslationResource = async (targetLanguage, sourceLanguage, gender, authToken) => {
+  console.log('Creating Translation Service...');
   const requestData = {
-    clientId: 'kudo-prod-payments-web-client',
-    sourceLanguages: [`${sourceLanguage}`],
+    clientId: CLIENT_ID,
+    sourceLanguages: [sourceLanguage],
     targetLanguages: targetLanguage,
     voiceGender: gender,
   };
 
   try {
-    const response = await baseService.post(
-      'https://external-api.kudoway.com/api/v1/translation_resource',
-      JSON.stringify(requestData),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-token': authToken,
-        },
-      }
-    );
+    const response = await baseService.post(EXTERNAL_API_SERVER_URL, JSON.stringify(requestData), {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-token': authToken,
+      },
+    });
     if (!response.data) {
       throw new Error('Failed to create translation resource');
     }

@@ -7,13 +7,13 @@ import { base64ToArrayBuffer, publishTranslatedAudio } from '../helper/PublishTa
 import { publishSourceAudioToWebsocket } from '../helper/PublishSourceAudio';
 
 export const WebsocketConnection = ({ resourceId, tbPublisherCallback, authToken }) => {
-  const EXTERNAL_API_SERVER_URL = process.env.REACT_APP_EXTERNAL_API_SERVER_URL + `/translate?id=${resourceId}`;
+  const EXTERNAL_API_SOCKET_URL = process.env.REACT_APP_EXTERNAL_API_SOCKET_URL + `/translate?id=${resourceId}`;
   const [languageAudioData, _setLanguageAudioData] = useState({});
   const [mediaStreamDestinations, _setMediaStreamDestinations] = useState({});
   const audioContext = getAudioContext();
 
   // Socket Connection
-  const { sendMessage } = useWebSocket(EXTERNAL_API_SERVER_URL, {
+  const { sendMessage } = useWebSocket(EXTERNAL_API_SOCKET_URL, {
     onOpen: () => {
       console.log('WebSocket connection established.');
     },

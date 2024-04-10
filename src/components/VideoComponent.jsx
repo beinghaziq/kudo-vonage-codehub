@@ -29,6 +29,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Define Component
 export const VideoComponent = () => {
   // State and Ref Declarations
+  const customToken = process.env.REACT_APP_CUSTOM_TOKEN || null;
   const location = useLocation();
   const state = location.state.webinarFormData;
   const opentokApiToken = location.state.apiToken;
@@ -63,7 +64,7 @@ export const VideoComponent = () => {
     if (!languageExists) {
       predefinedLanguages.push(state.source);
     }
-  });
+  }, []);
 
   useEffect(() => {
     document.getElementsByClassName('OT_name')[0]
@@ -72,14 +73,7 @@ export const VideoComponent = () => {
   }, [document.getElementsByClassName('OT_name')[0]]);
 
   useEffect(() => {
-    FetchApiToken()
-      .then((apiToken) => {
-        setAuthToken(apiToken);
-        CreateTranslationResource(predefinedTargetLanguage, state.source.value, state.gender, apiToken)
-          .then((id) => setResourceId(id))
-          .catch((error) => console.error('Error creating translation resource:', error));
-      })
-      .catch((error) => console.error('Error creating auth token:', error));
+    generateTokenAndCreateResource();
   }, []);
 
   useEffect(() => {
@@ -108,6 +102,21 @@ export const VideoComponent = () => {
       handleStartPublishing();
     }
   }, [isInterviewStarted, isSessionConnected]);
+
+  const generateTokenAndCreateResource = async () => {
+    if (customToken) {
+      console.log('use custom token');
+      setAuthToken(customToken);
+    } else {
+      const apiToken = 'await FetchApiToken()';
+      setAuthToken(apiToken);
+      console.log('Token Generated');
+    }
+
+    CreateTranslationResource(predefinedTargetLanguage, state.source.value, state.gender, authToken)
+      .then((id) => setResourceId(id))
+      .catch((error) => console.error('Error creating translation resource:', error));
+  };
 
   // Event Handlers
   const handleCopyLink = () => {
