@@ -7,13 +7,13 @@ import { base64ToArrayBuffer, publishTranslatedAudio } from '../helper/PublishTa
 import { publishSourceAudioToWebsocket } from '../helper/PublishSourceAudio';
 
 export const WebsocketConnection = ({ resourceId, tbPublisherCallback, authToken }) => {
-  const SERVER_URL = `wss://external-api.kudoway.com/api/v1/translate?id=${resourceId}`;
+  const EXTERNAL_API_SERVER_URL = process.env.REACT_APP_EXTERNAL_API_SERVER_URL + `/translate?id=${resourceId}`;
   const [languageAudioData, _setLanguageAudioData] = useState({});
   const [mediaStreamDestinations, _setMediaStreamDestinations] = useState({});
   const audioContext = getAudioContext();
 
   // Socket Connection
-  const { sendMessage } = useWebSocket(SERVER_URL, {
+  const { sendMessage } = useWebSocket(EXTERNAL_API_SERVER_URL, {
     onOpen: () => {
       console.log('WebSocket connection established.');
     },
@@ -53,6 +53,7 @@ export const WebsocketConnection = ({ resourceId, tbPublisherCallback, authToken
       audioDuration: data.audioDuration,
     });
 
+    // Publish translated audio in the target language
     publishTranslatedAudio(
       targetLanguage,
       languageAudioData,
