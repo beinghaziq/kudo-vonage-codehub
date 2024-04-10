@@ -2,14 +2,14 @@ import OT from '@opentok/client';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
-import { useVonagePublisher } from '../Hooks/useVonagePublisher';
+import { useVonagePublisher } from '../Hooks/useVonagePublisher.js';
 import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnection.jsx';
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
 import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
 import FetchApiToken from '../ExternalApiIntegration/fetchApiToken.js';
-import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
+import { ConfirmationModal } from '../components/confirmationModal/ConfirmationModal.jsx';
 import { ToastContainer, toast } from 'react-toastify';
-import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
+import { LanguageSelector } from '../components/LanguageSelector/LanguageSelector.jsx';
 import Avatar from 'react-avatar';
 
 // Import Images
@@ -27,7 +27,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { predefinedTargetLanguagesList } from '../constants/LanguagesList.js';
 
 // Define Component
-export const VideoComponent = () => {
+export const MeetingPage = () => {
   // State and Ref Declarations
   const [authToken, setAuthToken] = useState(process.env.REACT_APP_CUSTOM_TOKEN || null);
   const location = useLocation();

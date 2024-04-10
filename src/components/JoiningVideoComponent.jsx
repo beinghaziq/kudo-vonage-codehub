@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
+import { LanguageSelector } from './LanguageSelector/LanguageSelector.jsx';
 import { useLocation } from 'react-router-dom';
 import createSubscriberToken from '../ExternalApiIntegration/createSubscriberToken.js';
 import { useVonageSession } from '../Hooks/useVonageSession.js';

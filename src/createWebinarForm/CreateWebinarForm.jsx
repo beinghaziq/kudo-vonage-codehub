@@ -9,7 +9,7 @@ import logo from '../assets/kudo.png';
 import { createVonageApiTokens } from '../ExternalApiIntegration/createVonageApiTokens.js';
 import { predefinedTargetLanguagesList, sourceLanguagesList } from '../constants/LanguagesList.js';
 
-export const WebinarJoiningForm = () => {
+export const CreateWebinarForm = () => {
   const navigate = useNavigate();
   const [selectedGender, setSelectedGender] = useState('female');
   const [isClicked, setIsClicked] = useState(false);
