@@ -43,22 +43,14 @@ export const VideoComponent = () => {
   const [showToolbar, setShowToolbar] = useState(false);
   const [captionLanguage, setCaptionLanguage] = useState(state.source);
   const [authToken, setAuthToken] = useState(null);
-  const [translatedBuffer, setTranslatedBuffer] = useState(null);
   const languageExists = predefinedLanguages.find((lang) => lang.value === state.source.value);
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
     opentokApiToken?.publisher_token,
     setIsSessionConnected
   );
-  const {
-    createPublisher,
-    publishTranslatedAudio,
-    toggleAudio,
-    toggleVideo,
-    togglePublisherDestroy,
-    stopStreaming,
-    connectMediaStreamToTokbox,
-  } = useVonagePublisher(session, state.name, captionLanguage.value);
+  const { createPublisher, toggleAudio, toggleVideo, togglePublisherDestroy, stopStreaming, tbPublisherCallback } =
+    useVonagePublisher(session, state.name, captionLanguage.value);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
@@ -289,13 +281,8 @@ export const VideoComponent = () => {
 
         {chunk && resourceId && isStreamSubscribed ? (
           <WebsocketConnection
-            dataBlobUrl={chunk}
-            translatedBuffer={translatedBuffer}
-            setTranslatedBuffer={setTranslatedBuffer}
-            isInterviewStarted={isInterviewStarted}
             resourceId={resourceId}
-            publishTranslatedAudio={publishTranslatedAudio}
-            connectMediaStreamToTokbox={connectMediaStreamToTokbox}
+            tbPublisherCallback={tbPublisherCallback}
             authToken={authToken}
           />
         ) : null}

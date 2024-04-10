@@ -60,15 +60,11 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
       });
   };
 
-  const connectMediaStreamToTokbox = (langCode, mediaStreamDestination) => {
-    console.log('stream:', mediaStreamDestination);
+  const tbPublisherCallback = (langCode, mediaStreamDestination, caption) => {
     publishers[langCode].setAudioSource(mediaStreamDestination.stream.getAudioTracks()[0]);
-  };
-
-  const publishTranslatedAudio = (targetLanguage, subtitle) => {
-    sendCaption(session, subtitle, targetLanguage);
-    if (targetLanguage == captionLanguage) {
-      addCaptionsForSubscriber(subtitle, hostName);
+    sendCaption(session, caption, langCode);
+    if (langCode == captionLanguage) {
+      addCaptionsForSubscriber(caption, hostName);
     }
   };
 
@@ -104,7 +100,6 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
     togglePublisherDestroy,
     stopStreaming,
     createPublisher,
-    publishTranslatedAudio,
-    connectMediaStreamToTokbox,
+    tbPublisherCallback,
   };
 };
