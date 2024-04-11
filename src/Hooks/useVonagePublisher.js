@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import OT from '@opentok/client';
-import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
 import { handleError } from '../Helpers/HandleError.js';
 import { addCaptionsForSubscriber } from '../VonageIntegration/AddCaptionsForSubscriber.js';
 import { createAudioStream, sendCaption } from '../VonageIntegration/publishData.js';
 import { getAudioContext } from '../constants/AudioContext.js';
+import { predefinedTargetLanguagesList } from '../constants/LanguagesList.js';
 
 export const useVonagePublisher = (session, hostName, captionLanguage) => {
   const [publishers, setPublishers] = useState({});
 
-  const targetLanguages = predefinedLanguages.map((language) => language.value);
+  const targetLanguages = predefinedTargetLanguagesList.map((language) => language.value);
 
   const createPublisher = () => {
     const audioContext = getAudioContext();
@@ -60,15 +60,14 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
       });
   };
 
-  const connectMediaStreamToTokbox = (langCode, mediaStreamDestination) => {
-    console.log('stream:', mediaStreamDestination);
+  const tbPublisherCallback = (langCode, mediaStreamDestination) => {
     publishers[langCode].setAudioSource(mediaStreamDestination.stream.getAudioTracks()[0]);
   };
 
-  const publishTranslatedAudio = (targetLanguage, subtitle) => {
-    sendCaption(session, subtitle, targetLanguage);
-    if (targetLanguage == captionLanguage) {
-      addCaptionsForSubscriber(subtitle, hostName);
+  const publishCaptionCallback = (langCode, caption) => {
+    sendCaption(session, caption, langCode);
+    if (langCode == captionLanguage) {
+      addCaptionsForSubscriber(caption, hostName);
     }
   };
 
@@ -104,7 +103,7 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
     togglePublisherDestroy,
     stopStreaming,
     createPublisher,
-    publishTranslatedAudio,
-    connectMediaStreamToTokbox,
+    tbPublisherCallback,
+    publishCaptionCallback,
   };
 };

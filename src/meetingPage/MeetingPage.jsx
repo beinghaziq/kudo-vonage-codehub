@@ -2,15 +2,14 @@ import OT from '@opentok/client';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
-import { useVonagePublisher } from '../Hooks/useVonagePublisher';
+import { useVonagePublisher } from '../Hooks/useVonagePublisher.js';
 import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnection.jsx';
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
 import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
 import FetchApiToken from '../ExternalApiIntegration/fetchApiToken.js';
-import { ConfirmationModal } from './confirmationModal/ConfirmationModal.jsx';
+import { ConfirmationModal } from '../components/confirmationModal/ConfirmationModal.jsx';
 import { ToastContainer, toast } from 'react-toastify';
-import { LanguageSelector } from '../LanguageSelector/LanguageSelector.jsx';
-import { predefinedLanguages } from '../constants/PredefinedLanguages.js';
+import { LanguageSelector } from '../components/LanguageSelector/LanguageSelector.jsx';
 import Avatar from 'react-avatar';
 
 // Import Images
@@ -25,10 +24,12 @@ import invite from '../assets/invite.svg';
 import close from '../assets/X.svg';
 
 import 'react-toastify/dist/ReactToastify.css';
+import { predefinedTargetLanguagesList } from '../constants/LanguagesList.js';
 
 // Define Component
-export const VideoComponent = () => {
+export const MeetingPage = () => {
   // State and Ref Declarations
+  const [authToken, setAuthToken] = useState(process.env.REACT_APP_CUSTOM_TOKEN || null);
   const location = useLocation();
   const state = location.state.webinarFormData;
   const opentokApiToken = location.state.apiToken;
@@ -42,9 +43,7 @@ export const VideoComponent = () => {
   const [isSessionConnected, setIsSessionConnected] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
   const [captionLanguage, setCaptionLanguage] = useState(state.source);
-  const [authToken, setAuthToken] = useState(null);
-  const [translatedBuffer, setTranslatedBuffer] = useState(null);
-  const languageExists = predefinedLanguages.find((lang) => lang.value === state.source.value);
+  const languageExists = predefinedTargetLanguagesList.find((lang) => lang.value === state.source.value);
   const { session, toggleSession } = useVonageSession(
     opentokApiToken?.session_id,
     opentokApiToken?.publisher_token,
@@ -52,12 +51,12 @@ export const VideoComponent = () => {
   );
   const {
     createPublisher,
-    publishTranslatedAudio,
     toggleAudio,
     toggleVideo,
     togglePublisherDestroy,
     stopStreaming,
-    connectMediaStreamToTokbox,
+    tbPublisherCallback,
+    publishCaptionCallback,
   } = useVonagePublisher(session, state.name, captionLanguage.value);
   const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
@@ -69,9 +68,9 @@ export const VideoComponent = () => {
   // Effect Hooks
   useEffect(() => {
     if (!languageExists) {
-      predefinedLanguages.push(state.source);
+      predefinedTargetLanguagesList.push(state.source);
     }
-  });
+  }, []);
 
   useEffect(() => {
     document.getElementsByClassName('OT_name')[0]
@@ -80,14 +79,7 @@ export const VideoComponent = () => {
   }, [document.getElementsByClassName('OT_name')[0]]);
 
   useEffect(() => {
-    FetchApiToken()
-      .then((apiToken) => {
-        setAuthToken(apiToken);
-        CreateTranslationResource(predefinedTargetLanguage, state.source.value, state.gender, apiToken)
-          .then((id) => setResourceId(id))
-          .catch((error) => console.error('Error creating translation resource:', error));
-      })
-      .catch((error) => console.error('Error creating auth token:', error));
+    generateTokenAndCreateResource();
   }, []);
 
   useEffect(() => {
@@ -116,6 +108,18 @@ export const VideoComponent = () => {
       handleStartPublishing();
     }
   }, [isInterviewStarted, isSessionConnected]);
+
+  const generateTokenAndCreateResource = async () => {
+    let token = authToken;
+    if (!authToken) {
+      token = await FetchApiToken();
+      setAuthToken(token);
+    }
+
+    CreateTranslationResource(predefinedTargetLanguage, state.source.value, state.gender, token)
+      .then((id) => setResourceId(id))
+      .catch((error) => console.error('Error creating translation resource:', error));
+  };
 
   // Event Handlers
   const handleCopyLink = () => {
@@ -264,7 +268,7 @@ export const VideoComponent = () => {
             <div className="flex justify-start items-center m-4 z-10">
               <LanguageSelector
                 setCaptionLanguage={setCaptionLanguage}
-                predefinedLanguages={predefinedLanguages}
+                predefinedTargetLanguagesList={predefinedTargetLanguagesList}
                 isCaption={true}
               />
             </div>
@@ -289,13 +293,9 @@ export const VideoComponent = () => {
 
         {chunk && resourceId && isStreamSubscribed ? (
           <WebsocketConnection
-            dataBlobUrl={chunk}
-            translatedBuffer={translatedBuffer}
-            setTranslatedBuffer={setTranslatedBuffer}
-            isInterviewStarted={isInterviewStarted}
             resourceId={resourceId}
-            publishTranslatedAudio={publishTranslatedAudio}
-            connectMediaStreamToTokbox={connectMediaStreamToTokbox}
+            tbPublisherCallback={tbPublisherCallback}
+            publishCaptionCallback={publishCaptionCallback}
             authToken={authToken}
           />
         ) : null}

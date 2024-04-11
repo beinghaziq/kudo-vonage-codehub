@@ -14,10 +14,12 @@ const FetchApiToken = async () => {
         },
       }
     );
+
     if (!response.data) {
       throw new Error('Failed to fetch token');
     }
 
+    console.log('Token Generated');
     return response.data.body;
   } catch (error) {
     console.error('Error creating auth token:', error);
