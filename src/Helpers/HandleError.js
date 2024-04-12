@@ -1,5 +1,5 @@
 export function handleError(error) {
   if (error) {
-    console.log(error.message);
+    console.log('ERROR:', error.message);
   }
 }
