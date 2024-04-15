@@ -27,7 +27,7 @@ export const JoiningVideoComponent = () => {
   const [captionLanguage, setCaptionLanguage] = useState({ value: sourceLanguage.code, label: sourceLanguage.name });
   const [languageTooltip, setLanguageTooltip] = useState(true);
   const languageRef = useRef(false);
-  const { toggleSession, reSubscribeStream } = useVonageSession(
+  const { toggleSession, reSubscribeStreams } = useVonageSession(
     sessionId,
     subscriberToken,
     null,
@@ -45,7 +45,7 @@ export const JoiningVideoComponent = () => {
 
   useEffect(() => {
     if (languageRef.current) {
-      reSubscribeStream(SelectedLanguage.value);
+      reSubscribeStreams(SelectedLanguage.value);
     } else {
       languageRef.current = true;
     }

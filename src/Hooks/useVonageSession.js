@@ -19,59 +19,45 @@ export const useVonageSession = (
   const [streams, setStreams] = useState([]);
 
   useEffect(() => {
+    if (session) {
+      // Connect to the session
+      session.connect(token, function (error) {
+        // If the connection is successful, publish to the session
+        if (setIsSessionConnected) {
+          setIsSessionConnected(true);
+        }
+        if (error) {
+          handleError(error);
+        } else {
+        }
+      });
+
+      session.off('signal:caption');
+      if (hostName) {
+        session.on('signal:caption', (event) => captionSignalEvent(event, captionLanguage, hostName));
+      }
+      session.on('streamCreated', (event) =>
+        streamCreatedEvent(event, setStreams, selectedTargetLanguage, setSubscriber, session)
+      );
+    }
+  }, [selectedTargetLanguage, session, setIsSessionConnected, token, captionLanguage]);
+
+  useEffect(() => {
     if (setIsStreamConnected) {
       setIsStreamConnected(!(streams.length === 0));
     }
   }, [streams]);
 
-  useEffect(() => {
-    if (session) {
-      session.off('signal:caption');
-      session.on('signal:caption', (event) => {
-        console.log('CAPTION SIGNAL EVENT:');
-        if (hostName) {
-          captionSignalEvent(event, captionLanguage, hostName);
-        }
-      });
-    }
-  }, [captionLanguage, session]);
-
-  const subscribeSession = (session) => {
-    // Connect to the session
-    session.connect(token, function (error) {
-      // If the connection is successful, publish to the session
-      if (setIsSessionConnected) {
-        setIsSessionConnected(true);
-      }
-      if (error) {
-        handleError(error);
-      }
-    });
-
-    session.on('streamCreated', (event) => {
-      console.log('STREAM CREATED EVENT:');
-      streamCreatedEvent(event, setStreams, selectedTargetLanguage, setSubscriber, session);
-    });
-  };
-
   const toggleSession = () => {
-    console.log('Connecting to session....');
     if (session && session.isConnected()) {
       session.disconnect();
       setSession(null);
     } else {
-      const initSession = OT.initSession(API_KEY, subscriberId);
-      setSession(initSession);
-      subscribeSession(initSession);
+      setSession(OT.initSession(API_KEY, subscriberId));
     }
   };
 
-  const reSubscribeStream = (selectedLanguage) => {
-    const subscriberOptions = {
-      insertMode: 'append',
-      width: '100%',
-      height: '100%',
-    };
+  const reSubscribeStreams = (selectedLanguage) => {
     if (subscriber) {
       session.unsubscribe(subscriber);
     }
@@ -80,8 +66,18 @@ export const useVonageSession = (
     for (let i = 0; i < streams.length; i++) {
       if (streams[i].name === selectedLanguage) {
         console.log('Session resubscribed with language', selectedLanguage);
-        const subscriber = session.subscribe(streams[i], 'subscriber', subscriberOptions, handleError);
-        setSubscriber(subscriber);
+        setSubscriber(
+          session.subscribe(
+            streams[i],
+            'subscriber',
+            {
+              insertMode: 'append',
+              width: '100%',
+              height: '100%',
+            },
+            handleError
+          )
+        );
       }
     }
   };
@@ -89,6 +85,6 @@ export const useVonageSession = (
   return {
     session,
     toggleSession,
-    reSubscribeStream,
+    reSubscribeStreams,
   };
 };

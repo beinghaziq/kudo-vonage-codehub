@@ -1,12 +1,11 @@
 let panner;
-
-export const getAudioBuffer = (buffer, audioContext) => {
+export function getAudioBuffer(buffer, audioContext) {
   return new Promise((resolve, reject) => {
     audioContext.decodeAudioData(buffer, resolve, reject);
   });
-};
+}
 
-export const createAudioStream = (audioBuffer, audioContext) => {
+export function createAudioStream(audioBuffer, audioContext) {
   const startTime = audioContext.currentTime;
 
   const player = audioContext.createBufferSource();
@@ -25,9 +24,9 @@ export const createAudioStream = (audioBuffer, audioContext) => {
       player.stop();
     },
   };
-};
+}
 
-export const sendCaption = (session, captionText, websocketTargetLanguage) => {
+export function sendCaption(session, captionText, websocketTargetLanguage) {
   session.signal(
     {
       type: 'caption',
@@ -41,4 +40,4 @@ export const sendCaption = (session, captionText, websocketTargetLanguage) => {
       }
     }
   );
-};
+}
