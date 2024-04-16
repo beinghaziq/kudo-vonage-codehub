@@ -7,10 +7,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Run this command to install all the required dependencies
 ##### `npm install`
 
-If you are facing any error while install the any package you can install that package separately by appending the --legacy-peer-deps ath the end 
-e.g.
-##### `npm install recordrtc --legacy-peer-deps`
-
 
 ### Set up and test the application:
 To implement the Vonage Video API in ReactJS, the first step is to create a new project for our application from the Vonage Dashboard in order to obtain the API key and secret. These credentials are necessary to authenticate requests to the Vonage API.
