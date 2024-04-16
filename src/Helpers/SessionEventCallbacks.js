@@ -2,10 +2,11 @@ import { addCaptionsForSubscriber } from '../VonageIntegration/AddCaptionsForSub
 import { handleError } from './HandleError.js';
 
 export const captionSignalEvent = (event, captionLanguage, hostName) => {
-  if (event.data.websocketTargetLanguage === captionLanguage) {
-    addCaptionsForSubscriber(event.data.captionText, hostName);
+  const captionData = JSON.parse(event.data);
+  if (captionData.websocketTargetLanguage === captionLanguage) {
+    addCaptionsForSubscriber(captionData.captionText, hostName);
   }
-  console.log('Received caption:', event.data);
+  console.log('Received caption:', captionData);
 };
 
 export const streamCreatedEvent = (event, setStreams, selectedTargetLanguage, setSubscriber, session) => {

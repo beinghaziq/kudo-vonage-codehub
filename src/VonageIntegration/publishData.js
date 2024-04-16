@@ -31,7 +31,7 @@ export const sendCaption = (session, captionText, websocketTargetLanguage) => {
   session.signal(
     {
       type: 'caption',
-      data: { captionText, websocketTargetLanguage },
+      data: JSON.stringify({ captionText, websocketTargetLanguage }),
     },
     function (error) {
       if (error) {
