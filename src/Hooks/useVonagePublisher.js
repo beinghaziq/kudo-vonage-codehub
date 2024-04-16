@@ -41,12 +41,7 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
               if (error) {
                 handleError(error);
               } else {
-                // If the connection is successful, publish the publisher1 to the session
-                session.publish(publisher, (error) => {
-                  if (error) {
-                    handleError(error);
-                  }
-                });
+                publishToVonage(publisher, targetLanguages[i]);
               }
             }
           );
@@ -58,6 +53,32 @@ export const useVonagePublisher = (session, hostName, captionLanguage) => {
         audioContext.close();
         throw error;
       });
+  };
+
+  const MAX_RETRIES = 5;
+  const RETRY_DELAY = 2000; // 2 seconds
+  let retryCount = 0;
+
+  const publishToVonage = (publisher, targetLanguage) => {
+    session.publish(publisher, (error) => {
+      if (error) {
+        console.error(`Error publishing to Vonage for target language: ${targetLanguage}`, error);
+
+        if (retryCount < MAX_RETRIES) {
+          console.log(`Retrying publication (attempt ${retryCount + 1}) for target language: ${targetLanguage}`);
+          retryCount++;
+          setTimeout(() => {
+            publishToVonage(publisher, targetLanguage);
+          }, RETRY_DELAY);
+        } else {
+          console.error('Maximum number of retries reached. Aborting publication.');
+          // You can add additional error handling logic here, such as notifying the user
+        }
+      } else {
+        console.log(`Successfully published to Vonage for target language: ${targetLanguage}`);
+        retryCount = 0; // Reset the retry count
+      }
+    });
   };
 
   const tbPublisherCallback = (langCode, mediaStreamDestination) => {
