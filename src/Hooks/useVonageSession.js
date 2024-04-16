@@ -26,13 +26,17 @@ export const useVonageSession = (
 
   useEffect(() => {
     if (session) {
-      session.off('signal:caption');
-      session.on('signal:caption', (event) => {
+      const onCaptionSignal = (event) => {
         console.log('CAPTION SIGNAL EVENT:');
         if (hostName) {
           captionSignalEvent(event, captionLanguage, hostName);
         }
-      });
+      };
+      session.on('signal:caption', onCaptionSignal);
+
+      return () => {
+        session.off('signal:caption', onCaptionSignal);
+      };
     }
   }, [captionLanguage, session]);
 
