@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 import { useVonageSession } from '../Hooks/useVonageSession.js';
 import { useVonagePublisher } from '../Hooks/useVonagePublisher.js';
 import { WebsocketConnection } from '../ExternalApiIntegration/websocketConnection.jsx';
-import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
 import CreateTranslationResource from '../ExternalApiIntegration/createTranslationResource.js';
 import FetchApiToken from '../ExternalApiIntegration/fetchApiToken.js';
 import { ConfirmationModal } from '../components/confirmationModal/ConfirmationModal.jsx';
@@ -58,7 +57,6 @@ export const MeetingPage = () => {
     tbPublisherCallback,
     publishCaptionCallback,
   } = useVonagePublisher(session, state.name, captionLanguage.value);
-  const [chunk, setChunk] = useState(null);
   const [resourceId, setResourceId] = useState(null);
   const recorderRef = useRef(null);
   const JoiningLink = opentokApiToken
@@ -81,27 +79,6 @@ export const MeetingPage = () => {
   useEffect(() => {
     generateTokenAndCreateResource();
   }, []);
-
-  useEffect(() => {
-    if (isStreamSubscribed) {
-      OT.getUserMedia({ audio: true })
-        .then(function (stream) {
-          recorderRef.current = new RecordRTC(stream, {
-            type: 'audio',
-            mimeType: 'audio/wav',
-            recorderType: StereoAudioRecorder,
-            timeSlice: 500,
-            ondataavailable: function (data) {
-              setChunk(data);
-            },
-          });
-          recorderRef.current.startRecording();
-        })
-        .catch(function (error) {
-          console.error('Error accessing microphone:', error);
-        });
-    }
-  }, [isStreamSubscribed]);
 
   useEffect(() => {
     if (isInterviewStarted && isSessionConnected) {
@@ -291,7 +268,7 @@ export const MeetingPage = () => {
           />
         </div>
 
-        {chunk && resourceId && isStreamSubscribed ? (
+        {resourceId && isStreamSubscribed ? (
           <WebsocketConnection
             resourceId={resourceId}
             tbPublisherCallback={tbPublisherCallback}
