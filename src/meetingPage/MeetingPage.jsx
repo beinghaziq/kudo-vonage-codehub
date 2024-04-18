@@ -77,6 +77,12 @@ export const MeetingPage = () => {
   }, [document.getElementsByClassName('OT_name')[0]]);
 
   useEffect(() => {
+    document.getElementsByClassName('OT_mute')[0]
+      ? (document.getElementsByClassName('OT_mute')[0].style.display = 'none')
+      : null;
+  }, [document.getElementsByClassName('OT_mute')[0]]);
+
+  useEffect(() => {
     generateTokenAndCreateResource();
   }, []);
 
@@ -274,6 +280,8 @@ export const MeetingPage = () => {
             tbPublisherCallback={tbPublisherCallback}
             publishCaptionCallback={publishCaptionCallback}
             authToken={authToken}
+            isAudioEnabled={isAudioEnabled}
+            isInterviewStarted={isInterviewStarted}
           />
         ) : null}
       </div>

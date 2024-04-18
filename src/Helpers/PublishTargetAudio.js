@@ -16,7 +16,8 @@ export const publishTranslatedAudio = async (
   language,
   languageAudioData,
   destinationStream,
-  publishCaptionCallback
+  publishCaptionCallback,
+  isAudioEnabled
 ) => {
   if (!languageAudioData[language].isPlaying) {
     const data = languageAudioData[language]['data'].shift();
@@ -28,14 +29,20 @@ export const publishTranslatedAudio = async (
       const source = audioContext.createBufferSource();
       source.buffer = decodedAudioBuffer;
       source.connect(destinationStream);
-      publishCaptionCallback(language, data.caption);
+      if (isAudioEnabled) publishCaptionCallback(language, data.caption);
       source.start();
       // callback for when audio buffer has ended
       source.onended = () => {
         languageAudioData[language].isPlaying = false;
         // recalling for next audio to play
         if (languageAudioData[language]['data'].length > 0) {
-          publishTranslatedAudio(language, languageAudioData, destinationStream, publishCaptionCallback);
+          publishTranslatedAudio(
+            language,
+            languageAudioData,
+            destinationStream,
+            publishCaptionCallback,
+            isAudioEnabled
+          );
         }
       };
     } catch (e) {

@@ -6,19 +6,26 @@ import { base64ToArrayBuffer, publishTranslatedAudio } from '../Helpers/PublishT
 import { publishSourceAudioToWebsocket } from '../Helpers/PublishSourceAudio';
 import { predefinedTargetLanguagesList } from '../constants/LanguagesList';
 
-export const WebsocketConnection = ({ resourceId, tbPublisherCallback, publishCaptionCallback, authToken }) => {
+export const WebsocketConnection = ({
+  resourceId,
+  tbPublisherCallback,
+  publishCaptionCallback,
+  authToken,
+  isAudioEnabled,
+  isInterviewStarted,
+}) => {
   const EXTERNAL_API_SOCKET_URL = process.env.REACT_APP_EXTERNAL_API_SOCKET_URL + `/translate?id=${resourceId}`;
   const [languageAudioData, _setLanguageAudioData] = useState({});
   const [mediaStreamDestinations, _setMediaStreamDestinations] = useState({});
+  const [webSocketUrl, setWebSocketUrl] = useState(EXTERNAL_API_SOCKET_URL);
   const audioContext = getAudioContext();
-
   // Socket Connection
-  const { sendMessage } = useWebSocket(EXTERNAL_API_SOCKET_URL, {
+  const { sendMessage } = useWebSocket(webSocketUrl, {
     onOpen: () => {
       console.log('WebSocket connection established.');
     },
     onMessage: (message) => {
-      processResponseFromWebsocket(message);
+      processResponseFromWebsocket(message, isAudioEnabled);
     },
     onClose: (e) => {
       console.log('closed', e);
@@ -61,7 +68,8 @@ export const WebsocketConnection = ({ resourceId, tbPublisherCallback, publishCa
       targetLanguage,
       languageAudioData,
       mediaStreamDestinations[targetLanguage],
-      publishCaptionCallback
+      publishCaptionCallback,
+      isAudioEnabled
     );
   };
 
@@ -69,4 +77,10 @@ export const WebsocketConnection = ({ resourceId, tbPublisherCallback, publishCa
     initData();
     publishSourceAudioToWebsocket(sendMessage);
   }, []);
+
+  useEffect(() => {
+    if (!isInterviewStarted) {
+      setWebSocketUrl(null);
+    }
+  }, [isInterviewStarted]);
 };
